@@ -34,9 +34,11 @@ export interface AuthContextType {
 
 export interface ReportContextType {
   reports: Incident[];
-  addReport: (report: Omit<Incident, 'id' | 'createdOn'>) => void;
-  updateReport: (id: number, updates: Partial<Incident>) => void;
-  deleteReport: (id: number) => void;
+  addReport: (report: Omit<Incident, 'id' | 'createdOn'>) => number;
+  updateReport: (id: number, updates: Partial<Incident>) => boolean;
+  deleteReport: (id: number) => boolean;
+  getReport: (id: number) => Incident | undefined;
   getUserReports: (userId: number) => Incident[];
   getAllReports: () => Incident[];
+  debugReports?: () => void; // Optional debug function
 }

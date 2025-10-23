@@ -1,6 +1,20 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../assets/ireportlogo.png';
+import { 
+  FiHome, 
+  FiFileText, 
+  FiPlusSquare, 
+  FiUser, 
+  FiUsers, 
+  FiBarChart2, 
+  FiLogOut,
+  FiChevronLeft,
+  FiChevronRight,
+  FiSettings,
+  FiShield
+} from 'react-icons/fi';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -8,6 +22,14 @@ interface SidebarProps {
   onToggle: () => void;
   mobileOpen: boolean;
   onMobileClose: () => void;
+}
+
+// Navigation item interface
+interface NavItem {
+  path: string;
+  icon: JSX.Element;
+  label: string;
+  isAdmin?: boolean;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -25,22 +47,39 @@ const Sidebar: React.FC<SidebarProps> = ({
     navigate('/login');
   };
 
-  const userNavItems = [
-    { path: '/dashboard', icon: '🏠', label: 'Dashboard' },
-    { path: '/red-flags', icon: '🚩', label: 'My Red-Flags' },
-    { path: '/interventions', icon: '⚙️', label: 'My Interventions' },
-    { path: '/profile', icon: '👤', label: 'Profile' },
+  // Icon components with proper typing
+  const HomeIcon = () => <FiHome className="nav-icon" />;
+  const FileTextIcon = () => <FiFileText className="nav-icon" />;
+  const PlusSquareIcon = () => <FiPlusSquare className="nav-icon" />;
+  const UserIcon = () => <FiUser className="nav-icon" />;
+  const UsersIcon = () => <FiUsers className="nav-icon" />;
+  const BarChartIcon = () => <FiBarChart2 className="nav-icon" />;
+  const SettingsIcon = () => <FiSettings className="nav-icon" />;
+  const ShieldIcon = () => <FiShield className="nav-icon" />;
+  const LogoutIcon = () => <FiLogOut className="nav-icon logout-icon" />;
+  const ChevronLeftIcon = () => <FiChevronLeft className="toggle-icon" />;
+  const ChevronRightIcon = () => <FiChevronRight className="toggle-icon" />;
+
+  // Common navigation items for all users
+  const commonNavItems: NavItem[] = [
+    { path: '/dashboard', icon: <HomeIcon />, label: 'Dashboard' },
+    { path: '/reports', icon: <FileTextIcon />, label: 'My Reports' },
+    { path: '/create-report', icon: <PlusSquareIcon />, label: 'Create Report' },
+    { path: '/profile', icon: <UserIcon />, label: 'Profile' },
   ];
 
-  const adminNavItems = [
-    { path: '/admin', icon: '📋', label: 'All Reports' },
-    { path: '/admin/red-flags', icon: '🚩', label: 'Red-Flags' },
-    { path: '/admin/interventions', icon: '⚙️', label: 'Interventions' },
-    { path: '/admin/users', icon: '👥', label: 'Manage Users' },
-    { path: '/admin/analytics', icon: '📊', label: 'Analytics' },
+  // Admin-only navigation items
+  const adminNavItems: NavItem[] = [
+    { path: '/admin', icon: <ShieldIcon />, label: 'Admin Dashboard', isAdmin: true },
+    { path: '/admin/users', icon: <UsersIcon />, label: 'Manage Users', isAdmin: true },
+    { path: '/admin/analytics', icon: <BarChartIcon />, label: 'Analytics', isAdmin: true },
+    { path: '/admin/settings', icon: <SettingsIcon />, label: 'Settings', isAdmin: true },
   ];
 
-  const navItems = user?.isAdmin ? adminNavItems : userNavItems;
+  // Combine navigation items based on user role
+  const navItems: NavItem[] = user?.isAdmin 
+    ? [...commonNavItems, ...adminNavItems] 
+    : commonNavItems;
 
   const handleNavClick = () => {
     if (window.innerWidth <= 768) {
@@ -55,54 +94,63 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div 
           className="mobile-overlay"
           onClick={onMobileClose}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 999,
-          }}
         />
       )}
 
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
+        
+        {/* Toggle Button */}
         <div className="sidebar-toggle" onClick={onToggle}>
-          {isCollapsed ? '→' : '←'}
+          {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
         </div>
 
+        {/* Header with Logo */}
         <div className="sidebar-header">
-          <div className="sidebar-logo">iReporter</div>
+          <div className="logo-container">
+            <img 
+              src={logo}
+              alt="iReporter Logo" 
+              className="sidebar-logo"
+            />
+            {!isCollapsed && <span className="logo-text">iReporter</span>}
+          </div>
         </div>
 
+        {/* Navigation */}
         <nav className="sidebar-nav">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
-              onClick={handleNavClick}
+          <div className="nav-section">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item ${location.pathname === item.path ? 'active' : ''} ${item.isAdmin ? 'admin-item' : ''}`}
+                onClick={handleNavClick}
+              >
+                <span className="nav-icon-wrapper">
+                  {item.icon}
+                </span>
+                {!isCollapsed && (
+                  <div className="nav-content">
+                    <span className="nav-label">{item.label}</span>
+                    {item.isAdmin && <span className="admin-badge">Admin</span>}
+                  </div>
+                )}
+              </Link>
+            ))}
+          </div>
+
+          {/* Logout Section */}
+          <div className="nav-section logout-section">
+            <button
+              onClick={handleLogout}
+              className="nav-item logout-button"
             >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-text">{item.label}</span>
-            </Link>
-          ))}
-          
-          <button
-            onClick={handleLogout}
-            className="nav-item"
-            style={{
-              background: 'none',
-              border: 'none',
-              width: '100%',
-              textAlign: 'left',
-              cursor: 'pointer'
-            }}
-          >
-            <span className="nav-icon">🚪</span>
-            <span className="nav-text">Logout</span>
-          </button>
+              <span className="nav-icon-wrapper">
+                <LogoutIcon />
+              </span>
+              {!isCollapsed && <span className="nav-label">Logout</span>}
+            </button>
+          </div>
         </nav>
       </div>
     </>

@@ -33,32 +33,11 @@
   color: #64748b;
 }
 
-.quick-actions {
-  display: flex;
-  gap: 16px;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
   margin-bottom: 32px;
-  flex-wrap: wrap;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 24px;
-  background: white;
-  border: 2px dashed #e2e8f0;
-  border-radius: 12px;
-  color: #64748b;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.action-btn:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
-  background: #eff6ff;
 }
 
 .recent-activity {
@@ -115,7 +94,29 @@
   margin-bottom: 24px;
 }
 
-/* Mobile Responsive */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+}
+
 @media (max-width: 768px) {
   .dashboard-main {
     margin-left: 0 !important;
@@ -127,14 +128,6 @@
   
   .welcome-title {
     font-size: 24px;
-  }
-  
-  .quick-actions {
-    flex-direction: column;
-  }
-  
-  .action-btn {
-    justify-content: center;
   }
   
   .stats-grid {

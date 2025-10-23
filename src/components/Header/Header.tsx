@@ -1,4 +1,5 @@
 import React from 'react';
+import { FiMenu, FiSearch } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import './Header.css';
 
@@ -8,6 +9,10 @@ interface HeaderProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
 }
+
+// Create icon components with proper typing
+const MenuIcon = () => <FiMenu size={20} />;
+const SearchIcon = () => <FiSearch size={16} />;
 
 const Header: React.FC<HeaderProps> = ({ 
   title, 
@@ -34,7 +39,7 @@ const Header: React.FC<HeaderProps> = ({
     <header className="header">
       <div className="header-left">
         <button className="menu-toggle" onClick={onMenuToggle}>
-          ☰
+          <MenuIcon />
         </button>
         <h1 className="header-title">{title}</h1>
       </div>
@@ -48,7 +53,9 @@ const Header: React.FC<HeaderProps> = ({
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
           />
-          <span className="search-icon">🔍</span>
+          <span className="search-icon">
+            <SearchIcon />
+          </span>
         </div>
 
         <div className="user-info">

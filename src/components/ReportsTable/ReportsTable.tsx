@@ -9,6 +9,7 @@ interface ReportsTableProps {
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
   onStatusChange?: (id: number, status: string) => void;
+  onView?: (report: Incident) => void;
   isAdmin?: boolean;
 }
 
@@ -18,6 +19,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
   onEdit, 
   onDelete,
   onStatusChange,
+  onView,
   isAdmin = false 
 }) => {
   const canEditOrDelete = (report: Incident) => {
@@ -34,9 +36,32 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
     return options.filter(option => option.value !== currentStatus);
   };
 
-  const mobileHeaders = [
-    'ID', 'Report', 'Type', 'Status', 'Date', 'Actions'
-  ];
+  const handleViewClick = (report: Incident) => {
+    if (onView) {
+      onView(report);
+    } else {
+      // Fallback: show basic alert if onView not provided
+      alert(`Report: ${report.title}\nStatus: ${report.status}\nType: ${report.type}`);
+    }
+  };
+
+  const handleEditClick = (id: number) => {
+    if (onEdit) {
+      onEdit(id);
+    }
+  };
+
+  const handleDeleteClick = (id: number) => {
+    if (onDelete) {
+      onDelete(id);
+    }
+  };
+
+  const handleStatusChangeClick = (id: number, newStatus: string) => {
+    if (onStatusChange) {
+      onStatusChange(id, newStatus);
+    }
+  };
 
   return (
     <div className="reports-table">
@@ -59,7 +84,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
           </p>
         </div>
       ) : (
-        reports.map((report, index) => (
+        reports.map((report) => (
           <div key={report.id} className="table-row">
             {/* Report ID */}
             <div 
@@ -100,7 +125,7 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
               {isAdmin && onStatusChange ? (
                 <select
                   value={report.status}
-                  onChange={(e) => onStatusChange(report.id, e.target.value)}
+                  onChange={(e) => handleStatusChangeClick(report.id, e.target.value)}
                   style={{
                     padding: '6px 12px',
                     border: `2px solid ${getStatusColor(report.status)}`,
@@ -149,17 +174,29 @@ const ReportsTable: React.FC<ReportsTableProps> = ({
                 className="table-cell table-actions" 
                 data-label="Actions"
               >
+                {/* View Button - Always shown */}
+                <button
+                  className="action-btn view"
+                  onClick={() => handleViewClick(report)}
+                  title="View report details"
+                >
+                  View
+                </button>
+                
+                {/* Edit Button */}
                 <button
                   className="action-btn edit"
-                  onClick={() => onEdit?.(report.id)}
+                  onClick={() => handleEditClick(report.id)}
                   disabled={!canEditOrDelete(report)}
                   title={canEditOrDelete(report) ? "Edit report" : "Cannot edit resolved/investigation reports"}
                 >
                   Edit
                 </button>
+
+                {/* Delete Button */}
                 <button
                   className="action-btn delete"
-                  onClick={() => onDelete?.(report.id)}
+                  onClick={() => handleDeleteClick(report.id)}
                   disabled={!canEditOrDelete(report)}
                   title={canEditOrDelete(report) ? "Delete report" : "Cannot delete resolved/investigation reports"}
                 >

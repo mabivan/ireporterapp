@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useReports } from '../../context/ReportContext';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -17,7 +17,8 @@ const Dashboard: React.FC = () => {
   const [filteredReports, setFilteredReports] = useState<Incident[]>([]);
 
   const { user } = useAuth();
-  const { getUserReports } = useReports();
+  const { getUserReports, deleteReport } = useReports();
+  const navigate = useNavigate();
   
   const userReports = getUserReports(user?.id || 0);
 
@@ -43,6 +44,48 @@ const Dashboard: React.FC = () => {
   const recentReports = userReports
     .sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime())
     .slice(0, 5);
+
+  const handleViewReport = (report: Incident) => {
+    const details = `
+Report Details:
+
+Title: ${report.title}
+Type: ${report.type === 'red-flag' ? 'Red Flag 🚩' : 'Intervention ⚙️'}
+Status: ${report.status}
+Date: ${formatDate(new Date(report.createdOn))}
+Location: ${report.location}
+
+Description:
+${report.comment}
+
+${report.images.length > 0 ? `Images: ${report.images.length} attached` : ''}
+${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
+    `;
+    alert(details);
+  };
+
+  const handleEditReport = (id: number) => {
+    navigate(`/edit-report/${id}`);
+  };
+
+  const handleDeleteReport = (id: number) => {
+    const report = userReports.find(r => r.id === id);
+    if (!report) return;
+
+    if (report.status !== 'draft') {
+      alert('You can only delete reports that are in draft status.');
+      return;
+    }
+
+    if (window.confirm(`Are you sure you want to delete "${report.title}"? This action cannot be undone.`)) {
+      const success = deleteReport(id);
+      if (success) {
+        alert('Report deleted successfully!');
+      } else {
+        alert('Failed to delete report. Please try again.');
+      }
+    }
+  };
 
   const handleSidebarToggle = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -74,7 +117,6 @@ const Dashboard: React.FC = () => {
         />
         
         <div className="dashboard-content">
-          {/* Welcome Section */}
           <div className="welcome-section">
             <h1 className="welcome-title">
               Welcome back, {user?.firstname}!
@@ -84,7 +126,6 @@ const Dashboard: React.FC = () => {
             </p>
           </div>
 
-          {/* Quick Stats */}
           <div className="stats-grid">
             <StatsCard
               title="Total Reports"
@@ -112,19 +153,6 @@ const Dashboard: React.FC = () => {
             />
           </div>
 
-          {/* Quick Actions */}
-          <div className="quick-actions">
-            <Link to="/create-report?type=red-flag" className="action-btn">
-              <span>🚩</span>
-              Report Corruption
-            </Link>
-            <Link to="/create-report?type=intervention" className="action-btn">
-              <span>⚙️</span>
-              Request Intervention
-            </Link>
-          </div>
-
-          {/* Recent Activity */}
           <div className="recent-activity">
             <div className="section-header">
               <h2 className="section-title">Recent Reports</h2>
@@ -137,8 +165,9 @@ const Dashboard: React.FC = () => {
               <ReportsTable 
                 reports={recentReports} 
                 showActions={true}
-                onEdit={(id) => console.log('Edit:', id)}
-                onDelete={(id) => console.log('Delete:', id)}
+                onEdit={handleEditReport}
+                onDelete={handleDeleteReport}
+                onView={handleViewReport}
               />
             ) : (
               <div className="empty-state">

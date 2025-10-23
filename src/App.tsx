@@ -11,9 +11,9 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import Profile from './pages/Profile/Profile';
 import CreateReport from './pages/CreateReport/CreateReport';
+import EditReport from './pages/EditReport/EditReport';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
-
 import './App.css';
 
 const AppRoutes: React.FC = () => {
@@ -77,7 +77,7 @@ const AppRoutes: React.FC = () => {
         path="/edit-report/:reportId" 
         element={
           <ProtectedRoute>
-            <CreateReport />
+            <EditReport />
           </ProtectedRoute>
         } 
       />

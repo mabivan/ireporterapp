@@ -21,14 +21,16 @@
   display: none;
   background: none;
   border: none;
-  font-size: 20px;
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
+  color: #64748b;
+  transition: all 0.3s ease;
 }
 
 .menu-toggle:hover {
   background: #f8fafc;
+  color: #374151;
 }
 
 .header-title {
