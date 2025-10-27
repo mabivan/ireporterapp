@@ -1,4 +1,3 @@
-// src/App.tsx
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -17,8 +16,6 @@ import AdminDashboard from "./pages/Admin/AdminDashboard";
 import Profile from "./pages/Profile/Profile";
 import CreateReport from "./pages/CreateReport/CreateReport";
 import EditReport from "./pages/EditReport/EditReport";
-
-// Components
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
@@ -37,7 +34,6 @@ const AppRoutes: React.FC = () => {
           )
         }
       />
-
       <Route
         path="/login"
         element={
@@ -58,7 +54,6 @@ const AppRoutes: React.FC = () => {
           )
         }
       />
-
       <Route
         path="/dashboard"
         element={
@@ -70,7 +65,7 @@ const AppRoutes: React.FC = () => {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute adminOnly>
+          <ProtectedRoute adminOnly={true}>
             <AdminDashboard />
           </ProtectedRoute>
         }
@@ -99,8 +94,7 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
-
-      {/* Redirect all unknown routes to / */}
+      {/* Catch all unmatched routes */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
