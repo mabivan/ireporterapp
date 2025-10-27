@@ -197,46 +197,85 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .stats-section {
-    padding: 3rem 0;
+    padding: 3.5rem 0;
+  }
+
+  .section-header {
+    margin-bottom: 2.5rem;
   }
 
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
   }
 
   .stat-card {
-    padding: 2rem 1rem;
+    padding: 2rem 1.25rem;
+  }
+
+  .stat-icon {
+    margin-bottom: 1rem;
   }
 
   .stat-number {
     font-size: 2rem;
+    margin-bottom: 0.5rem;
   }
 
   .countries-section {
-    padding: 2rem 1rem;
+    padding: 2.5rem 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .countries-title {
+    margin-bottom: 2rem;
   }
 
   .countries-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
   }
 
   .stories-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .story-card {
+    padding: 2rem;
+  }
+
+  .story-icon {
+    margin-bottom: 1rem;
+  }
+
+  .story-card h4 {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-section {
+    padding: 2.5rem 0;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .countries-grid {
     grid-template-columns: 1fr;
   }
 
   .story-card {
     padding: 1.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .countries-grid {
-    grid-template-columns: 1fr;
   }
 
   .stat-number {
