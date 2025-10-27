@@ -1,3 +1,4 @@
+// Updated Dashboard.tsx - Only 4 professional cards
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -7,14 +8,21 @@ import Header from '../../components/Header/Header';
 import StatsCard from '../../components/StatsCard/StatsCard';
 import ReportsTable from '../../components/ReportsTable/ReportsTable';
 import { Incident } from '../../utils/types';
-import { getStatusColor, formatDate } from '../../utils/helpers';
+import { formatDate } from '../../utils/helpers';
 import './Dashboard.css';
+
+// Import only the icons we need for 4 cards
+import {
+  FiFileText,      // For Total Reports - represents documents/files
+  FiFlag,          // For Red Flags - represents reporting/flags
+  FiTool,          // For Interventions - represents tools/actions
+  FiTrendingUp,    // For Success Rate - represents growth/trends
+} from 'react-icons/fi';
 
 const Dashboard: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredReports, setFilteredReports] = useState<Incident[]>([]);
 
   const { user } = useAuth();
   const { getUserReports, deleteReport } = useReports();
@@ -22,24 +30,23 @@ const Dashboard: React.FC = () => {
 
   const userReports = useMemo(() => getUserReports(user?.id || 0), [user?.id, getUserReports]);
 
-  useEffect(() => {
-    const filtered = userReports.filter(report =>
-      report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      report.comment.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredReports(filtered);
-  }, [searchTerm, userReports]);
+  // Calculate statistics for 4 cards only
+  const stats = useMemo(() => {
+    const totalReports = userReports.length;
+    const redFlags = userReports.filter(r => r.type === 'red-flag').length;
+    const interventions = userReports.filter(r => r.type === 'intervention').length;
+    const resolved = userReports.filter(r => r.status === 'resolved').length;
+    
+    // Success rate (resolved reports percentage)
+    const successRate = totalReports > 0 ? Math.round((resolved / totalReports) * 100) : 0;
 
-  const stats = {
-    totalReports: userReports.length,
-    redFlags: userReports.filter(r => r.type === 'red-flag').length,
-    interventions: userReports.filter(r => r.type === 'intervention').length,
-    resolved: userReports.filter(r => r.status === 'resolved').length,
-    pending: userReports.filter(r => 
-      r.status === 'draft' || r.status === 'under investigation'
-    ).length,
-    rejected: userReports.filter(r => r.status === 'rejected').length,
-  };
+    return {
+      totalReports,
+      redFlags,
+      interventions,
+      successRate
+    };
+  }, [userReports]);
 
   const recentReports = userReports
     .sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime())
@@ -107,7 +114,7 @@ ${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
         mobileOpen={isMobileOpen}
         onMobileClose={handleMobileClose}
       />
-      
+
       <div className={`dashboard-main ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <Header
           title="Dashboard"
@@ -115,55 +122,64 @@ ${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
         />
-        
+
         <div className="dashboard-content">
           <div className="welcome-section">
             <h1 className="welcome-title">
               Welcome back, {user?.firstname}!
             </h1>
             <p className="welcome-subtitle">
-              Here's what's happening with your reports today.
+              Track your reports and monitor their progress in real-time.
             </p>
           </div>
 
+          {/* Professional Stats Grid with Only 4 Cards */}
           <div className="stats-grid">
             <StatsCard
               title="Total Reports"
               value={stats.totalReports}
-              type="red-flag"
-              icon="📊"
+              description="All your submitted cases"
+              trend={{ value: 12.5, isPositive: true }}
+              icon={<FiFileText />}
+              type="primary"
             />
             <StatsCard
               title="Red Flags"
               value={stats.redFlags}
+              description="Corruption reports filed"
+              trend={{ value: 8.3, isPositive: true }}
+              icon={<FiFlag />}
               type="red-flag"
-              icon="🚩"
             />
             <StatsCard
               title="Interventions"
               value={stats.interventions}
+              description="Service requests submitted"
+              trend={{ value: 15.2, isPositive: true }}
+              icon={<FiTool />}
               type="intervention"
-              icon="⚙️"
             />
             <StatsCard
-              title="Resolved"
-              value={stats.resolved}
-              type="resolved"
-              icon="✅"
+              title="Success Rate"
+              value={`${stats.successRate}%`}
+              description="Cases successfully resolved"
+              trend={{ value: 5.7, isPositive: true }}
+              icon={<FiTrendingUp />}
+              type="success"
             />
           </div>
 
           <div className="recent-activity">
             <div className="section-header">
               <h2 className="section-title">Recent Reports</h2>
-              <Link to="/my-reports" className="view-all">
+              <Link to="/reports" className="view-all">
                 View All Reports
               </Link>
             </div>
 
             {recentReports.length > 0 ? (
-              <ReportsTable 
-                reports={recentReports} 
+              <ReportsTable
+                reports={recentReports}
                 showActions={true}
                 onEdit={handleEditReport}
                 onDelete={handleDeleteReport}

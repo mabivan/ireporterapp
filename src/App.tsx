@@ -13,6 +13,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import Profile from './pages/Profile/Profile';
 import CreateReport from './pages/CreateReport/CreateReport';
 import EditReport from './pages/EditReport/EditReport';
+import Reports from './pages/Reports/Reports'; // ← ADD THIS IMPORT
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -22,14 +23,9 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          isAuthenticated ?
-            <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace />
-            : <Landing />
-        }
-      />
+      {/* Always show landing page at root, regardless of authentication */}
+      <Route path="/" element={<Landing />} />
+      
       <Route
         path="/login"
         element={
@@ -82,11 +78,12 @@ const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+      {/* UPDATE THESE ROUTES */}
       <Route
         path="/my-reports"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <Reports /> {/* ← CHANGED FROM Dashboard TO Reports */}
           </ProtectedRoute>
         }
       />
@@ -94,7 +91,7 @@ const AppRoutes: React.FC = () => {
         path="/reports"
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <Reports /> {/* ← CHANGED FROM Dashboard TO Reports */}
           </ProtectedRoute>
         }
       />

@@ -1,587 +1,285 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../../context/AuthContext';
+// src/components/Admin/AdminDashboard.tsx
+import React, { useState, useEffect } from 'react';
 import { useReports } from '../../context/ReportContext';
-import Sidebar from '../../components/Sidebar/Sidebar';
-import Header from '../../components/Header/Header';
-import StatsCard from '../../components/StatsCard/StatsCard';
-import ReportsTable from '../../components/ReportsTable/ReportsTable';
-import { Incident, AdminAction, User } from '../../utils/types';
-import { getStatusColor, formatDate } from '../../utils/helpers';
-import { mockUsers } from '../../utils/data';
-import './AdminDashboard.css';
+import { Incident } from '../../utils/types'; // Import Incident type
+import './AdminDashboard.css'; // Import the CSS file
+
+// Helper for status options - reusable
+const getStatusOptions = (currentStatus: Incident['status']) => {
+  const allStatuses: Incident['status'][] = ['draft', 'under investigation', 'resolved', 'rejected'];
+  return allStatuses.filter(status => status !== currentStatus);
+};
 
 const AdminDashboard: React.FC = () => {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [dateFilter, setDateFilter] = useState('');
-  const [filteredReports, setFilteredReports] = useState<Incident[]>([]);
-  const [selectedReport, setSelectedReport] = useState<Incident | null>(null);
-  const [showReportModal, setShowReportModal] = useState(false);
-  const [showActivityLog, setShowActivityLog] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'activity'>('overview');
-  const [statusChangeNotes, setStatusChangeNotes] = useState('');
-  const [selectedReportForStatus, setSelectedReportForStatus] = useState<Incident | null>(null);
-  const [newStatus, setNewStatus] = useState('');
-  const [activityLogs, setActivityLogs] = useState<AdminAction[]>([]);
+  const { reports, updateReport } = useReports(); // Use the ReportContext
+  const [loading, setLoading] = useState<boolean>(true);
+  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const { user } = useAuth();
-  const { getAllReports, updateReport, deleteReport } = useReports();
+  // State for editing a record
+  const [editingRecord, setEditingRecord] = useState<Incident | null>(null);
+  // Use a flexible form data shape so admin edit fields (including temporary
+  // lat/lng entries) can be stored without causing excess-property errors.
+  const [editFormData, setEditFormData] = useState<Record<string, any> | null>(null);
 
-  const allReports = useMemo(() => getAllReports(), []);
-
+  // Simulate initial data load delay (even if context is already populated)
   useEffect(() => {
-    let filtered = allReports;
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+      setMessage('Displaying all reports from context. Admin can edit any report.');
+    }, 500); // Shorter delay since data might already be in context
 
-    if (searchTerm) {
-      filtered = filtered.filter(report =>
-        report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        report.comment.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+    return () => clearTimeout(timer);
+  }, []);
 
-    if (typeFilter) {
-      filtered = filtered.filter(report => report.type === typeFilter);
-    }
-
-    if (statusFilter) {
-      filtered = filtered.filter(report => report.status === statusFilter);
-    }
-
-    if (dateFilter) {
-      const filterDate = new Date(dateFilter);
-      filtered = filtered.filter(report =>
-        new Date(report.createdOn).toDateString() === filterDate.toDateString()
-      );
-    }
-
-    setFilteredReports(filtered);
-  }, [searchTerm, typeFilter, statusFilter, dateFilter, allReports]);
-
-  const stats = {
-    totalReports: allReports.length,
-    redFlags: allReports.filter(r => r.type === 'red-flag').length,
-    interventions: allReports.filter(r => r.type === 'intervention').length,
-    resolved: allReports.filter(r => r.status === 'resolved').length,
-    underInvestigation: allReports.filter(r => r.status === 'under investigation').length,
-    draft: allReports.filter(r => r.status === 'draft').length,
-    rejected: allReports.filter(r => r.status === 'rejected').length,
-    todayReports: allReports.filter(r =>
-      new Date(r.createdOn).toDateString() === new Date().toDateString()
-    ).length,
-    weeklyReports: allReports.filter(r => {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      return new Date(r.createdOn) >= weekAgo;
-    }).length,
-  };
-
-  const getUserName = (userId: number): string => {
-    const foundUser = mockUsers.find(u => u.id === userId);
-    return foundUser ? `${foundUser.firstname} ${foundUser.lastname}` : 'Unknown User';
-  };
-
-  const handleStatusChange = (reportId: number, newStatusValue: string, notes: string = '') => {
-    const report = allReports.find(r => r.id === reportId);
-    if (!report || !user) return;
-
-    const action: AdminAction = {
-      id: `action_${Date.now()}`,
-      adminId: user.id,
-      adminName: `${user.firstname} ${user.lastname}`,
-      action: 'status_change',
-      reportId,
-      oldStatus: report.status,
-      newStatus: newStatusValue,
-      timestamp: new Date(),
-      notes,
-    };
-
-    const updatedActions = [...(report.adminActions || []), action];
-
-    updateReport(reportId, {
-      status: newStatusValue as any,
-      lastModifiedBy: user.id,
-      lastModifiedAt: new Date(),
-      adminActions: updatedActions,
-    });
-
-    setActivityLogs([...activityLogs, action]);
-    setSelectedReportForStatus(null);
-    setNewStatus('');
-    setStatusChangeNotes('');
-    alert(`Report status updated to "${newStatusValue}"`);
-  };
-
-  const handleDeleteReport = (reportId: number) => {
-    const report = allReports.find(r => r.id === reportId);
-    if (!report) return;
-
-    if (window.confirm(`Are you sure you want to delete "${report.title}"? This action cannot be undone.`)) {
-      const success = deleteReport(reportId);
-      if (success) {
-        const action: AdminAction = {
-          id: `action_${Date.now()}`,
-          adminId: user?.id || 0,
-          adminName: user ? `${user.firstname} ${user.lastname}` : 'Admin',
-          action: 'status_change',
-          reportId,
-          timestamp: new Date(),
-          notes: 'Report deleted',
-        };
-        setActivityLogs([...activityLogs, action]);
-        alert('Report deleted successfully!');
+  // Function to handle status change
+  const handleStatusChange = (recordId: number, newStatus: Incident['status']) => {
+    const recordToUpdate = reports.find(r => r.id === recordId);
+    if (recordToUpdate) {
+      const updated = updateReport(recordId, { status: newStatus });
+      if (updated) {
+        setMessage(`Status for record ${recordId} changed to "${newStatus}".`);
+        setError(null);
       } else {
-        alert('Failed to delete report. Please try again.');
+        setError(`Failed to update status for record ${recordId}.`);
       }
     }
   };
 
-  const handleViewReport = (report: Incident) => {
-    setSelectedReport(report);
-    setShowReportModal(true);
+  // Function to handle clicking the Edit button
+  const handleEditClick = (record: Incident) => {
+    setEditingRecord(record);
+    // Create a copy of the relevant fields for the form
+    const [lat, lng] = record.location.split(',').map(coord => coord.trim());
+    setEditFormData({
+      type: record.type,
+      title: record.title,
+      comment: record.comment,
+      location: record.location, // Keep the full string for display
+      // latitude and longitude were removed here to match the Incident shape
+      // If a map picker is added later, compute/merge lat/lng into the location string
+      images: record.images,
+      videos: record.videos,
+    });
   };
 
-  const getStatusDistribution = () => {
-    const statusCounts = {
-      draft: stats.draft,
-      'under investigation': stats.underInvestigation,
-      resolved: stats.resolved,
-      rejected: stats.rejected,
-    };
-
-    return Object.entries(statusCounts).map(([status, count]) => ({
-      status,
-      count,
-      percentage: stats.totalReports > 0 ? (count / stats.totalReports) * 100 : 0,
-      color: getStatusColor(status),
+  // Function to handle changes in the edit form
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev!,
+      [name]: value,
     }));
   };
 
-  const handleSidebarToggle = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
+  // Function to save edited record
+  const handleSaveEdit = () => {
+    if (editingRecord && editFormData) {
+      const updatedData: Partial<Incident> = {
+        title: editFormData.title,
+        type: editFormData.type,
+        comment: editFormData.comment,
+        // Assuming location will be updated if lat/lng changed in MapPicker,
+        // but for a simple form, we'll just use the text field value.
+        location: editFormData.location,
+        images: editFormData.images, // Pass existing arrays
+        videos: editFormData.videos, // Pass existing arrays
+      };
+
+      const success = updateReport(editingRecord.id, updatedData);
+      if (success) {
+        setMessage(`Record ${editingRecord.id} updated successfully!`);
+        setError(null);
+        setEditingRecord(null); // Exit edit mode
+        setEditFormData(null);
+      } else {
+        setError(`Failed to update record ${editingRecord.id}.`);
+      }
+    }
   };
 
-  const handleMobileMenuToggle = () => {
-    setIsMobileOpen(!isMobileOpen);
+  // Function to cancel editing
+  const handleCancelEdit = () => {
+    setEditingRecord(null);
+    setEditFormData(null);
+    setMessage('Edit cancelled.');
+    setError(null);
   };
 
-  const handleMobileClose = () => {
-    setIsMobileOpen(false);
-  };
-
-  const clearFilters = () => {
-    setSearchTerm('');
-    setTypeFilter('');
-    setStatusFilter('');
-    setDateFilter('');
-  };
-
-  const recentActivities = activityLogs.slice().reverse().slice(0, 10);
+  if (loading) {
+    return (
+      <div className="admin-dashboard-container">
+        <div className="loading-spinner"></div>
+        <p>Loading reports...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="admin-dashboard">
-      <Sidebar
-        isCollapsed={isSidebarCollapsed}
-        onToggle={handleSidebarToggle}
-        mobileOpen={isMobileOpen}
-        onMobileClose={handleMobileClose}
-      />
+    <div className="admin-dashboard-container">
+      <h2 className="admin-dashboard-title">Admin Dashboard</h2>
+      <p className="admin-dashboard-subtitle">
+        Manage all reported incidents and interventions. (Using ReportContext)
+      </p>
 
-      <div className={`admin-main ${isSidebarCollapsed ? 'collapsed' : ''}`}>
-        <Header
-          title="Admin Dashboard"
-          onMenuToggle={handleMobileMenuToggle}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+      {message && <div className="info-message">{message}</div>}
+      {error && <div className="error-message">{error}</div>}
 
-        <div className="admin-content">
-          {/* Welcome Section */}
-          <div className="welcome-section">
-            <div className="welcome-text">
-              <h1 className="welcome-title">Admin Dashboard</h1>
-              <p className="welcome-subtitle">
-                Welcome back, {user?.firstname}! Manage reports and monitor platform activity.
-              </p>
-            </div>
-            <div className="welcome-stats">
-              <div className="stat-badge">
-                <span className="stat-number">{stats.todayReports}</span>
-                <span className="stat-label">Today</span>
-              </div>
-              <div className="stat-badge">
-                <span className="stat-number">{stats.weeklyReports}</span>
-                <span className="stat-label">This Week</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Navigation Tabs */}
-          <div className="admin-tabs">
-            <button
-              className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-              onClick={() => setActiveTab('overview')}
-            >
-              📊 Overview
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'reports' ? 'active' : ''}`}
-              onClick={() => setActiveTab('reports')}
-            >
-              📋 All Reports
-            </button>
-            <button
-              className={`tab-button ${activeTab === 'activity' ? 'active' : ''}`}
-              onClick={() => setActiveTab('activity')}
-            >
-              📝 Activity Log
-            </button>
-          </div>
-
-          {/* Overview Tab */}
-          {activeTab === 'overview' && (
-            <div className="overview-content">
-              {/* Key Metrics */}
-              <div className="metrics-grid">
-                <StatsCard
-                  title="Total Reports"
-                  value={stats.totalReports}
-                  type="red-flag"
-                  icon="📊"
-                />
-                <StatsCard
-                  title="Red Flags"
-                  value={stats.redFlags}
-                  type="red-flag"
-                  icon="🚩"
-                />
-                <StatsCard
-                  title="Interventions"
-                  value={stats.interventions}
-                  type="intervention"
-                  icon="⚙️"
-                />
-                <StatsCard
-                  title="Resolved"
-                  value={stats.resolved}
-                  type="resolved"
-                  icon="✅"
-                />
-              </div>
-
-              {/* Status Distribution */}
-              <div className="admin-section">
-                <h2 className="section-title">Status Distribution</h2>
-                <div className="status-distribution">
-                  {getStatusDistribution().map((item) => (
-                    <div key={item.status} className="status-dist-item">
-                      <div className="status-info">
-                        <div
-                          className="status-color"
-                          style={{ backgroundColor: item.color }}
-                        />
-                        <span className="status-name">{item.status}</span>
-                        <span className="status-count">{item.count}</span>
-                      </div>
-                      <div className="status-bar">
-                        <div
-                          className="status-fill"
-                          style={{
-                            width: `${item.percentage}%`,
-                            backgroundColor: item.color,
-                          }}
-                        />
-                      </div>
-                      <span className="status-percentage">{item.percentage.toFixed(1)}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="admin-section">
-                <h2 className="section-title">Quick Actions</h2>
-                <div className="quick-actions-grid">
-                  <div className="quick-action-card">
-                    <div className="action-icon">🚩</div>
-                    <h3>Red Flag Reports</h3>
-                    <p>Manage corruption reports</p>
-                    <span className="action-count">{stats.redFlags} reports</span>
-                  </div>
-                  <div className="quick-action-card">
-                    <div className="action-icon">⚙️</div>
-                    <h3>Intervention Requests</h3>
-                    <p>Handle government interventions</p>
-                    <span className="action-count">{stats.interventions} requests</span>
-                  </div>
-                  <div className="quick-action-card">
-                    <div className="action-icon">🔍</div>
-                    <h3>Under Investigation</h3>
-                    <p>Review ongoing investigations</p>
-                    <span className="action-count">{stats.underInvestigation} cases</span>
-                  </div>
-                  <div className="quick-action-card">
-                    <div className="action-icon">📈</div>
-                    <h3>Platform Analytics</h3>
-                    <p>View detailed analytics</p>
-                    <span className="action-count">View Report</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Reports Tab */}
-          {activeTab === 'reports' && (
-            <div className="reports-content">
-              {/* Filters */}
-              <div className="filters-section">
-                <div className="filters-header">
-                  <h3>Report Filters</h3>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={clearFilters}
-                  >
-                    Clear Filters
-                  </button>
-                </div>
-                <div className="filters-grid">
-                  <div className="filter-group">
-                    <label>Report Type</label>
-                    <select
-                      className="filter-select"
-                      value={typeFilter}
-                      onChange={(e) => setTypeFilter(e.target.value)}
-                    >
-                      <option value="">All Types</option>
-                      <option value="red-flag">Red Flags</option>
-                      <option value="intervention">Interventions</option>
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label>Status</label>
-                    <select
-                      className="filter-select"
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                      <option value="">All Status</option>
-                      <option value="draft">Draft</option>
-                      <option value="under investigation">Under Investigation</option>
-                      <option value="resolved">Resolved</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
-                  </div>
-
-                  <div className="filter-group">
-                    <label>Date</label>
-                    <input
-                      type="date"
-                      className="filter-select"
-                      value={dateFilter}
-                      onChange={(e) => setDateFilter(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="filter-group">
-                    <label>Results</label>
-                    <div className="results-count">
-                      {filteredReports.length} reports found
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Reports Table */}
-              <div className="admin-section">
-                <ReportsTable
-                  reports={filteredReports}
-                  showActions={true}
-                  isAdmin={true}
-                  onStatusChange={handleStatusChange}
-                  onDelete={handleDeleteReport}
-                  onView={handleViewReport}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Activity Log Tab */}
-          {activeTab === 'activity' && (
-            <div className="activity-content">
-              <div className="admin-section">
-                <h2 className="section-title">Admin Activity Log</h2>
-                <div className="activity-log">
-                  {recentActivities.length > 0 ? (
-                    <div className="activity-list">
-                      {recentActivities.map((log) => (
-                        <div key={log.id} className="activity-item">
-                          <div className="activity-icon">
-                            {log.action === 'status_change' ? '📝' : '👁️'}
-                          </div>
-                          <div className="activity-details">
-                            <div className="activity-header">
-                              <span className="activity-admin">{log.adminName}</span>
-                              <span className="activity-action">
-                                {log.action === 'status_change' ? 'Changed status' : 'Viewed report'}
-                              </span>
-                            </div>
-                            <div className="activity-info">
-                              <span className="activity-report">Report ID: {log.reportId}</span>
-                              {log.oldStatus && log.newStatus && (
-                                <span className="activity-status">
-                                  {log.oldStatus} → <span className="status-highlight">{log.newStatus}</span>
-                                </span>
-                              )}
-                              {log.notes && (
-                                <span className="activity-notes">Notes: {log.notes}</span>
-                              )}
-                            </div>
-                            <div className="activity-time">
-                              {formatDate(new Date(log.timestamp))}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="empty-state">
-                      <div className="empty-icon">📭</div>
-                      <h3>No activity yet</h3>
-                      <p>Admin activity logs will appear here</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+      {reports.length === 0 ? (
+        <div className="no-records-message">
+          <p>No reports have been submitted yet.</p>
         </div>
-      </div>
-
-      {/* Report Detail Modal */}
-      {showReportModal && selectedReport && (
-        <div className="modal-overlay" onClick={() => setShowReportModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>Report Details</h2>
-              <button
-                className="modal-close"
-                onClick={() => setShowReportModal(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="report-detail">
-                <div className="detail-row">
-                  <label>Title:</label>
-                  <span>{selectedReport.title}</span>
-                </div>
-                <div className="detail-row">
-                  <label>Type:</label>
-                  <span className={`report-type ${selectedReport.type}`}>
-                    {selectedReport.type.replace('-', ' ')}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <label>Current Status:</label>
-                  <span
-                    className="status-badge"
-                    style={{
-                      backgroundColor: `${getStatusColor(selectedReport.status)}20`,
-                      color: getStatusColor(selectedReport.status),
-                      padding: '0.5rem 1rem',
-                      borderRadius: '8px',
-                    }}
-                  >
-                    {selectedReport.status}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <label>Date Created:</label>
-                  <span>{formatDate(new Date(selectedReport.createdOn))}</span>
-                </div>
-                <div className="detail-row">
-                  <label>Created By:</label>
-                  <span>{getUserName(selectedReport.createdBy)}</span>
-                </div>
-                <div className="detail-row">
-                  <label>Location:</label>
-                  <span>{selectedReport.location}</span>
-                </div>
-                <div className="detail-row full-width">
-                  <label>Description:</label>
-                  <p>{selectedReport.comment}</p>
-                </div>
-                {selectedReport.adminActions && selectedReport.adminActions.length > 0 && (
-                  <div className="detail-row full-width">
-                    <label>Admin Actions:</label>
-                    <div className="admin-actions-list">
-                      {selectedReport.adminActions.map((action) => (
-                        <div key={action.id} className="admin-action-item">
-                          <span className="action-by">{action.adminName}</span>
-                          <span className="action-type">
-                            {action.oldStatus} → {action.newStatus}
-                          </span>
-                          <span className="action-date">
-                            {formatDate(new Date(action.timestamp))}
-                          </span>
-                        </div>
+      ) : (
+        <div className="reports-table-wrapper">
+          <table className="reports-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Title</th>
+                <th>Comment</th>
+                <th>Location</th>
+                <th>Created By</th>
+                <th>Status</th>
+                <th className="actions-column">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reports.map(record => (
+                <tr key={record.id}>
+                  <td>{record.id}</td>
+                  <td>
+                    <span className={`type-badge type-${record.type}`}>
+                      {record.type.replace('-', ' ')}
+                    </span>
+                  </td>
+                  <td>{record.title}</td>
+                  <td>{record.comment.substring(0, 50)}{record.comment.length > 50 ? '...' : ''}</td>
+                  <td>{record.location}</td>
+                  <td>User {record.createdBy}</td>
+                  <td>
+                    <span className={`status-badge status-${record.status.replace(/\s+/g, '-')}`}>
+                      {record.status}
+                    </span>
+                  </td>
+                  <td className="actions-column">
+                    <select
+                      value={record.status}
+                      onChange={(e) => handleStatusChange(record.id, e.target.value as Incident['status'])}
+                      className="status-select"
+                      aria-label={`Change status for record ${record.id}`}
+                    >
+                      <option value={record.status} disabled>{record.status}</option> {/* Current status, disabled */}
+                      {getStatusOptions(record.status).map(statusOption => (
+                        <option key={statusOption} value={statusOption}>
+                          {statusOption}
+                        </option>
                       ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                    </select>
+                    <button
+                      onClick={() => handleEditClick(record)}
+                      className="btn btn-icon btn-edit"
+                      aria-label={`Edit record ${record.id}`}
+                    >
+                      <i className="fas fa-edit"></i> {/* Font Awesome icon */}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
-              {/* Status Change Section */}
-              <div className="status-change-section">
-                <h3>Change Report Status</h3>
-                <div className="status-change-form">
-                  <select
-                    className="status-select"
-                    value={newStatus}
-                    onChange={(e) => setNewStatus(e.target.value)}
-                  >
-                    <option value="">Select new status...</option>
-                    <option value="draft">Draft</option>
-                    <option value="under investigation">Under Investigation</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                  <textarea
-                    className="status-notes"
-                    placeholder="Add optional notes..."
-                    value={statusChangeNotes}
-                    onChange={(e) => setStatusChangeNotes(e.target.value)}
-                  />
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => {
-                      if (newStatus) {
-                        handleStatusChange(selectedReport.id, newStatus, statusChangeNotes);
-                        setShowReportModal(false);
-                      } else {
-                        alert('Please select a status');
-                      }
-                    }}
-                  >
-                    Update Status
-                  </button>
-                </div>
+      {/* Edit Record Modal/Overlay */}
+      {editingRecord !== null && editFormData && (
+        <div className="edit-modal-overlay">
+          <div className="edit-modal-content">
+            <h3>Edit Record #{editingRecord.id}</h3>
+            <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }}>
+              <div className="form-group">
+                <label htmlFor="editTitle">Title:</label>
+                <input
+                  type="text"
+                  id="editTitle"
+                  name="title"
+                  value={editFormData.title || ''}
+                  onChange={handleEditFormChange}
+                  required
+                />
               </div>
-            </div>
-            <div className="modal-footer">
-              <button
-                className="btn btn-secondary"
-                onClick={() => setShowReportModal(false)}
-              >
-                Close
-              </button>
-            </div>
+              <div className="form-group">
+                <label htmlFor="editType">Type:</label>
+                <select
+                  id="editType"
+                  name="type"
+                  value={editFormData.type || 'intervention'}
+                  onChange={handleEditFormChange}
+                  required
+                >
+                  <option value="intervention">Intervention</option>
+                  <option value="red-flag">Red-Flag</option>
+                </select>
+              </div>
+              {/* Note: For location, if you want a map picker here, you'd integrate MapPicker component.
+                  For now, we'll keep it as a text input which updates the original location string.
+                  The ReportForm handles lat/lng parsing and string formation, for simplicity here,
+                  we'll update the 'location' string directly.
+              */}
+              <div className="form-group">
+                <label htmlFor="editLocation">Location (Lat, Lng):</label>
+                <input
+                  type="text"
+                  id="editLocation"
+                  name="location"
+                  value={editFormData.location || ''}
+                  onChange={handleEditFormChange}
+                  required
+                  placeholder="e.g., -1.286389, 36.817223"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="editComment">Comment:</label>
+                <textarea
+                  id="editComment"
+                  name="comment"
+                  value={editFormData.comment || ''}
+                  onChange={handleEditFormChange}
+                  rows={5}
+                  required
+                ></textarea>
+              </div>
+              {/* For images/videos, you could add upload inputs and previews similar to ReportForm,
+                  but for simplicity in admin edit, we're currently just showing them and not
+                  allowing direct modification in this modal. If needed, this can be extended.
+              */}
+              {editingRecord.images && editingRecord.images.length > 0 && (
+                <div className="form-group">
+                  <label>Attached Images:</label>
+                  <div className="media-preview-admin">
+                    {editingRecord.images.map((img, idx) => (
+                      <img key={idx} src={img} alt={`Evidence ${idx + 1}`} className="modal-media-thumbnail" />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {editingRecord.videos && editingRecord.videos.length > 0 && (
+                <div className="form-group">
+                  <label>Attached Videos:</label>
+                  <div className="media-preview-admin">
+                    {editingRecord.videos.map((vid, idx) => (
+                      <video key={idx} src={vid} controls className="modal-media-thumbnail" />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="modal-actions">
+                <button type="submit" className="btn btn-primary">Save Changes</button>
+                <button type="button" onClick={handleCancelEdit} className="btn btn-secondary">Cancel</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

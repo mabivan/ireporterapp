@@ -41,7 +41,7 @@ const Landing: React.FC = () => {
               <span className="logo-icon">📍</span>
               <span className="logo-text">iReporter</span>
             </div>
-            
+
             <nav className="nav-links">
               <a href="#features">Features</a>
               <a href="#how-it-works">How It Works</a>
@@ -50,14 +50,14 @@ const Landing: React.FC = () => {
 
             <div className="header-actions">
               <div className="auth-buttons">
-                <button 
-                  className="btn btn-outline" 
+                <button
+                  className="btn btn-outline"
                   onClick={() => handleNavigation('/login')}
                 >
                   Login
                 </button>
-                <button 
-                  className="btn btn-primary" 
+                <button
+                  className="btn btn-primary"
                   onClick={() => handleNavigation('/signup')}
                 >
                   Sign Up
@@ -70,7 +70,7 @@ const Landing: React.FC = () => {
 
       <main>
         {/* Hero Section */}
-        <HeroSection 
+        <HeroSection
           onGetStarted={handleGetStarted}
           onReportNow={handleReportNow}
         />
@@ -91,14 +91,14 @@ const Landing: React.FC = () => {
               <h2>Ready to Make a Difference?</h2>
               <p>Join thousands of citizens fighting corruption and improving public services</p>
               <div className="cta-buttons">
-                <button 
-                  className="btn btn-secondary btn-large" 
+                <button
+                  className="btn btn-secondary btn-large"
                   onClick={handleGetStarted}
                 >
                   Create Account
                 </button>
-                <button 
-                  className="btn btn-outline btn-large" 
+                <button
+                  className="btn btn-outline btn-large"
                   onClick={handleReportNow}
                 >
                   Learn More
@@ -112,8 +112,8 @@ const Landing: React.FC = () => {
       {/* Footer */}
       <footer className="landing-footer">
         <div className="container">
-          <div className="footer-content">
-            <div className="footer-section">
+          <div className="footer-grid">
+            <div className="footer-brand">
               <div className="logo">
                 <span className="logo-icon">📍</span>
                 <span className="logo-text">iReporter</span>
@@ -122,40 +122,42 @@ const Landing: React.FC = () => {
                 Empowering citizens across Africa to report corruption and demand accountability from government officials.
               </p>
               <div className="social-links">
-                <a href="#twitter" aria-label="Twitter">𝕏</a>
-                <a href="#facebook" aria-label="Facebook">f</a>
-                <a href="#linkedin" aria-label="LinkedIn">in</a>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                  <i className="fab fa-twitter"></i>
+                </a>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                  <i className="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                  <i className="fab fa-linkedin-in"></i>
+                </a>
               </div>
             </div>
 
-            <div className="footer-section">
+            <div className="footer-links-group">
               <h4>Product</h4>
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How It Works</a>
-              <a href="#pricing">Pricing</a>
-              <a href="#security">Security</a>
+              <ul>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#impact">Impact</a></li>
+                <li><a href="#security">Security</a></li>
+              </ul>
             </div>
 
-            <div className="footer-section">
-              <h4>Company</h4>
-              <a href="#about">About Us</a>
-              <a href="#careers">Careers</a>
-              <a href="#blog">Blog</a>
-              <a href="#contact">Contact</a>
+            <div className="footer-newsletter">
+              <h4>Stay Connected</h4>
+              <p>Get updates on resolved cases and new features.</p>
+              <form className="newsletter-form">
+                <input type="email" placeholder="Your email address" aria-label="Email for newsletter" />
+                <button type="submit" className="btn btn-primary">Subscribe</button>
+              </form>
             </div>
 
-            <div className="footer-section">
-              <h4>Legal</h4>
-              <a href="#privacy">Privacy Policy</a>
-              <a href="#terms">Terms of Service</a>
-              <a href="#cookies">Cookie Policy</a>
-              <a href="#disclaimer">Disclaimer</a>
-            </div>
           </div>
 
           <div className="footer-bottom">
-            <p>&copy; 2024 iReporter. All rights reserved.</p>
-            <p>Made with ❤️ for transparency and accountability in Africa</p>
+            <p>&copy; {new Date().getFullYear()} iReporter. All rights reserved.</p>
+            <p>Transparency and accountability in Africa</p>
           </div>
         </div>
       </footer>

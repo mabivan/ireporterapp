@@ -167,97 +167,205 @@ main {
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, #1e40af, #dc2626);
+  background: linear-gradient(135deg, #1e40af, #dc2626); /* Stronger gradient for CTA */
   color: white;
   padding: 5rem 0;
   text-align: center;
+  clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 90%); /* Added a subtle wave effect */
+  margin-bottom: -6rem; /* Reduced to pull footer up closer */
+  position: relative;
+  z-index: 1; /* Ensure CTA is above other content */
 }
 
 .cta-content h2 {
-  font-size: 2.5rem;
+  font-size: 2.8rem; /* Slightly larger */
   margin-bottom: 1.5rem;
-  font-weight: 700;
+  font-weight: 800; /* Bolder */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .cta-content p {
-  font-size: 1.2rem;
-  margin-bottom: 3rem;
-  opacity: 0.9;
+  font-size: 1.3rem; /* Slightly larger */
+  margin-bottom: 3.5rem;
+  opacity: 0.95;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .cta-buttons {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem; /* Increased gap */
   justify-content: center;
   flex-wrap: wrap;
 }
 
 /* Footer Styles */
 .landing-footer {
-  background: #1f2937;
+  background: #1f2937; /* Dark background */
   color: #f9fafb;
-  padding: 3rem 0 1rem;
+  padding: 6rem 0 2rem; /* Reduced top padding to pull footer up */
+  position: relative;
+  z-index: 0;
 }
 
-.footer-content {
+.footer-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  grid-template-columns: 2.5fr 1.5fr 2fr; /* Adjusted column widths */
+  gap: 4rem; /* Increased gap */
+  margin-bottom: 2rem; /* Reduced space between grid and bottom footer */
+  border-bottom: 1px solid #374151; /* Subtle separator */
+  padding-bottom: 2rem; /* Reduced padding here as well */
 }
 
-.footer-section h4 {
-  color: #fbbf24;
+.footer-brand .logo {
   margin-bottom: 1.5rem;
-  font-size: 1.1rem;
 }
 
-.footer-section a {
-  color: #d1d5db;
-  text-decoration: none;
-  display: block;
-  margin-bottom: 0.75rem;
-  transition: color 0.3s ease;
-}
-
-.footer-section a:hover {
-  color: #fbbf24;
+.footer-brand .logo-text {
+  background: linear-gradient(135deg, #dc2626, #ea580c); /* Changed to red gradient */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .footer-description {
   color: #9ca3af;
-  line-height: 1.6;
-  margin: 1rem 0;
+  line-height: 1.7;
+  margin: 1rem 0 2rem;
+  font-size: 0.95rem;
+}
+
+.footer-links-group h4,
+.footer-newsletter h4 {
+  color:  #ea580c; /* Changed to red heading */
+  margin-bottom: 1.8rem; /* Increased margin */
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.footer-links-group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links-group a {
+  color: #d1d5db;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 0.9rem; /* Increased margin */
+  transition: color 0.3s ease, transform 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.footer-links-group a:hover {
+  color:  #ea580c; /* Changed to red hover color */
+  transform: translateX(5px); /* Subtle hover effect */
 }
 
 .social-links {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.2rem; /* Increased gap */
+  margin-top: 1.5rem;
 }
 
 .social-links a {
-  font-size: 1.5rem;
-  transition: transform 0.3s ease;
+  font-size: 1.8rem; /* Larger icons */
+  transition: transform 0.3s ease, color 0.3s ease;
   display: inline-block;
+  color: #9ca3af;
 }
 
 .social-links a:hover {
-  transform: scale(1.2);
+  transform: translateY(-5px) scale(1.1); /* More prominent hover */
+  color:  #ea580c; /* Changed to red hover color */
+}
+
+.footer-newsletter p {
+  color: #d1d5db;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.newsletter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.newsletter-form input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #4a5568;
+  border-radius: 8px;
+  background-color: #2d3748;
+  color: white;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.newsletter-form input::placeholder {
+  color: #a0aec0;
+}
+
+.newsletter-form input:focus {
+  border-color: #ea580c; /* Changed to red focus color */
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3); /* Changed to red shadow */
+}
+
+.newsletter-form .btn-primary {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, #dc2626, #ea580c); /* Changed to red gradient button */
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3); /* Changed to red shadow */
+  color: white; /* White text on red button */
+}
+
+.newsletter-form .btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4); /* Changed to red shadow */
+  transform: translateY(-3px);
 }
 
 .footer-bottom {
   border-top: 1px solid #374151;
-  padding-top: 2.5rem;
+  padding-top: 1.5rem; /* Reduced padding-top here */
   text-align: center;
   color: #9ca3af;
-}
-
-.footer-bottom p {
-  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: 1.5fr 1fr; /* Two columns for tablet */
+  }
+  .footer-newsletter {
+    grid-column: span 2; /* Newsletter spans full width */
+  }
+  .cta-section {
+    padding: 4rem 0;
+    margin-bottom: -4rem; /* Adjusted for smaller screens */
+  }
+  .cta-content h2 {
+    font-size: 2.5rem;
+  }
+  .cta-content p {
+    font-size: 1.15rem;
+  }
+  .landing-footer {
+    padding: 5rem 0 2rem; /* Adjusted for smaller screens */
+  }
+}
+
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
@@ -280,9 +388,15 @@ main {
     width: 100%;
   }
 
-  .footer-content {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
+  .footer-grid {
+    grid-template-columns: 1fr; /* Single column for mobile */
+    gap: 3rem;
+    padding-bottom: 1.5rem; /* Reduced padding */
+    margin-bottom: 1.5rem; /* Reduced margin */
+  }
+
+  .footer-newsletter {
+    grid-column: span 1; /* Reset span for single column */
   }
 
   .cta-buttons {
@@ -297,6 +411,13 @@ main {
 
   .container {
     padding: 0 1.25rem;
+  }
+  .cta-section {
+    clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%); /* Adjust wave effect for smaller screens */
+    margin-bottom: -3rem;
+  }
+  .landing-footer {
+    padding: 4rem 0 1.5rem;
   }
 }
 
@@ -313,5 +434,24 @@ main {
   .btn {
     padding: 0.6rem 1.2rem;
     font-size: 0.85rem;
+  }
+  .cta-content h2 {
+    font-size: 1.8rem;
+  }
+  .cta-content p {
+    font-size: 1rem;
+  }
+  .footer-brand .logo {
+    margin-bottom: 1rem;
+  }
+  .footer-links-group h4,
+  .footer-newsletter h4 {
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+  }
+  .newsletter-form input,
+  .newsletter-form .btn-primary {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
   }
 }
