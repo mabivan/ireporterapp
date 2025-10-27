@@ -1,18 +1,19 @@
 .features-section {
   padding: 5rem 0;
   background: #ffffff;
+  margin-top: 0;
 }
 
 .section-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3.5rem;
 }
 
 .section-title {
   font-size: 2.5rem;
   font-weight: 700;
   color: #1f2937;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   background: linear-gradient(135deg, #1f2937, #374151);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -30,8 +31,8 @@
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-  margin-bottom: 4rem;
+  gap: 2.25rem;
+  margin-bottom: 3.5rem;
 }
 
 .feature-card {
@@ -42,6 +43,9 @@
   border: 1px solid #f3f4f6;
   transition: all 0.3s ease;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .feature-card:hover {
@@ -58,7 +62,7 @@
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  margin: 0 auto 1.5rem;
+  margin: 0 auto 1.75rem;
   transition: all 0.3s ease;
 }
 
@@ -71,6 +75,7 @@
   font-weight: 600;
   color: #1f2937;
   margin-bottom: 1rem;
+  flex: 1;
 }
 
 .feature-description {
@@ -82,9 +87,9 @@
 .features-cta {
   text-align: center;
   background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-  padding: 3rem 2rem;
+  padding: 3.5rem 2.5rem;
   border-radius: 20px;
-  margin-top: 2rem;
+  margin-top: 0;
 }
 
 .features-cta h3 {
@@ -97,6 +102,7 @@
 .features-cta p {
   color: #6b7280;
   font-size: 1.1rem;
+  margin: 0;
 }
 
 /* Responsive Design */
