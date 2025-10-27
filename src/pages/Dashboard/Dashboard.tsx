@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useReports } from '../../context/ReportContext';
@@ -19,8 +19,8 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { getUserReports, deleteReport } = useReports();
   const navigate = useNavigate();
-  
-  const userReports = getUserReports(user?.id || 0);
+
+  const userReports = useMemo(() => getUserReports(user?.id || 0), [user?.id, getUserReports]);
 
   useEffect(() => {
     const filtered = userReports.filter(report =>
