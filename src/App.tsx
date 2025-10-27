@@ -5,6 +5,7 @@ import { ReportProvider } from './context/ReportContext';
 import { useAuth } from './context/AuthContext';
 
 // Pages
+import Landing from './pages/Landing/Landing';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -21,65 +22,65 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route 
-        path="/" 
+      <Route
+        path="/"
         element={
-          isAuthenticated ? 
-            <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace /> 
-            : <Navigate to="/login" replace />
-        } 
+          isAuthenticated ?
+            <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace />
+            : <Landing />
+        }
       />
-      <Route 
-        path="/login" 
+      <Route
+        path="/login"
         element={
           !isAuthenticated ? <Login /> : <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace />
-        } 
+        }
       />
-      <Route 
-        path="/signup" 
+      <Route
+        path="/signup"
         element={
           !isAuthenticated ? <Signup /> : <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace />
-        } 
+        }
       />
-      <Route 
-        path="/dashboard" 
+      <Route
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/admin" 
+      <Route
+        path="/admin"
         element={
           <ProtectedRoute adminOnly={true}>
             <AdminDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/profile" 
+      <Route
+        path="/profile"
         element={
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/create-report" 
+      <Route
+        path="/create-report"
         element={
           <ProtectedRoute>
             <CreateReport />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/edit-report/:reportId" 
+      <Route
+        path="/edit-report/:reportId"
         element={
           <ProtectedRoute>
             <EditReport />
           </ProtectedRoute>
-        } 
+        }
       />
       <Route path="*" element={<NotFound />} />
     </Routes>
