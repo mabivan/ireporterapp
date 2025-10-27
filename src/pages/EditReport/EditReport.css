@@ -14,7 +14,7 @@
 }
 
 .edit-report-content {
-  padding: 24px;
+  padding: 2rem;
 }
 
 .loading-container,
@@ -34,7 +34,7 @@
   border-top: 4px solid #3b82f6;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 16px;
+  margin-bottom: 1.25rem;
 }
 
 @keyframes spin {
@@ -44,20 +44,26 @@
 
 .error-container h2 {
   color: #ef4444;
-  margin-bottom: 8px;
+  margin-bottom: 1rem;
 }
 
 .error-container p {
   color: #6b7280;
-  margin-bottom: 16px;
+  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 768px) {
   .edit-report-main {
     margin-left: 0 !important;
   }
-  
+
   .edit-report-content {
-    padding: 16px;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-report-content {
+    padding: 1rem;
   }
 }
