@@ -60,7 +60,6 @@ const StatsSection: React.FC = () => {
           <div className="countries-grid">
             {countries.map((country, index) => (
               <div key={index} className="country-item">
-                <span className="country-flag">🇰🇪</span>
                 <span className="country-name">{country}</span>
               </div>
             ))}
@@ -74,19 +73,19 @@ const StatsSection: React.FC = () => {
               <div className="story-icon">🚧</div>
               <h4>Road Repair in Nairobi</h4>
               <p>"Reported a dangerous pothole on Mombasa Road. Within 2 weeks, it was completely repaired thanks to iReporter!"</p>
-              <div className="story-author">- John M., Nairobi</div>
+              <div className="story-author">- Joel S., Nairobi</div>
             </div>
             <div className="story-card">
               <div className="story-icon">💧</div>
               <h4>Water Supply Restored</h4>
               <p>"Our community had no water for weeks. After reporting on iReporter, authorities fixed the broken pipes in 3 days."</p>
-              <div className="story-author">- Amina K., Lagos</div>
+              <div className="story-author">- Ivan M., Lagos</div>
             </div>
             <div className="story-card">
               <div className="story-icon">🚩</div>
               <h4>Corruption Exposed</h4>
               <p>"Documented bribery at a government office. The officials were investigated and replaced within a month."</p>
-              <div className="story-author">- David T., Accra</div>
+              <div className="story-author">- Calvin K., Accra</div>
             </div>
           </div>
         </div>
