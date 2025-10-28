@@ -39,7 +39,7 @@ const Landing: React.FC = () => {
         <div className="container">
           <div className="header-content">
             <div className="logo">
-              <img src={logo} alt="iReport Logo" className="logo-image" />
+              <img src={logo} alt="VoiceUp Africa Logo" className="logo-image" />
               <span className="logo-text">VoiceUp Africa</span>
             </div>
 
@@ -52,13 +52,13 @@ const Landing: React.FC = () => {
             <div className="header-actions">
               <div className="auth-buttons">
                 <button
-                  className="btn btn-outline"
+                  className="landing-btn landing-btn-outline"
                   onClick={() => handleNavigation('/login')}
                 >
                   Login
                 </button>
                 <button
-                  className="btn btn-primary"
+                  className="landing-btn landing-btn-primary"
                   onClick={() => handleNavigation('/signup')}
                 >
                   Sign Up
@@ -93,13 +93,13 @@ const Landing: React.FC = () => {
               <p>Join thousands of citizens fighting corruption and improving public services</p>
               <div className="cta-buttons">
                 <button
-                  className="btn btn-secondary btn-large"
+                  className="landing-btn landing-btn-secondary landing-btn-large"
                   onClick={handleGetStarted}
                 >
                   Create Account
                 </button>
                 <button
-                  className="btn btn-outline btn-large"
+                  className="landing-btn landing-btn-outline landing-btn-large"
                   onClick={handleReportNow}
                 >
                   Learn More
@@ -116,7 +116,7 @@ const Landing: React.FC = () => {
           <div className="footer-grid">
             <div className="footer-brand">
               <div className="logo">
-                <img src={logo} alt="iReport Logo" className="logo-image" />
+                <img src={logo} alt="VoiceUp Africa Logo" className="logo-image" />
                 <span className="logo-text">VoiceUp Africa</span>
               </div>
               <p className="footer-description">
@@ -150,14 +150,14 @@ const Landing: React.FC = () => {
               <p>Get updates on resolved cases and new features.</p>
               <form className="newsletter-form">
                 <input type="email" placeholder="Your email address" aria-label="Email for newsletter" />
-                <button type="submit" className="btn btn-primary">Subscribe</button>
+                <button type="submit" className="landing-btn landing-btn-primary">Subscribe</button>
               </form>
             </div>
 
           </div>
 
           <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} iReport. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} VoiceUp Africa. All rights reserved.</p>
             <p>Transparency and accountability in Africa</p>
           </div>
         </div>
