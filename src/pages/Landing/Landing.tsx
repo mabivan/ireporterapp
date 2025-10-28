@@ -4,6 +4,7 @@ import HeroSection from '../../components/HeroSection/HeroSection';
 import FeaturesSection from '../../components/FeaturesSection/FeaturesSection';
 import HowItWorks from '../../components/HowItWorks/HowItWorks';
 import StatsSection from '../../components/StatsSection/StatsSection';
+import logo from '../../assets/ireportlogo.png';
 import './Landing.css';
 
 const Landing: React.FC = () => {
@@ -38,8 +39,8 @@ const Landing: React.FC = () => {
         <div className="container">
           <div className="header-content">
             <div className="logo">
-              <span className="logo-icon">📍</span>
-              <span className="logo-text">iReporter</span>
+              <img src={logo} alt="iReport Logo" className="logo-image" />
+              <span className="logo-text">VoiceUp Africa</span>
             </div>
 
             <nav className="nav-links">
@@ -115,8 +116,8 @@ const Landing: React.FC = () => {
           <div className="footer-grid">
             <div className="footer-brand">
               <div className="logo">
-                <span className="logo-icon">📍</span>
-                <span className="logo-text">iReporter</span>
+                <img src={logo} alt="iReport Logo" className="logo-image" />
+                <span className="logo-text">VoiceUp Africa</span>
               </div>
               <p className="footer-description">
                 Empowering citizens across Africa to report corruption and demand accountability from government officials.
@@ -156,7 +157,7 @@ const Landing: React.FC = () => {
           </div>
 
           <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} iReporter. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} iReport. All rights reserved.</p>
             <p>Transparency and accountability in Africa</p>
           </div>
         </div>

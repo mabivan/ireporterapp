@@ -48,8 +48,9 @@
   text-decoration: none;
 }
 
-.logo-icon {
-  font-size: 1.75rem;
+.logo-image {
+  height: 40px;
+  width: auto;
 }
 
 .logo-text {
@@ -167,25 +168,25 @@ main {
 
 /* CTA Section */
 .cta-section {
-  background: linear-gradient(135deg, #1e40af, #dc2626); /* Stronger gradient for CTA */
+  background: linear-gradient(135deg, #1e40af, #dc2626);
   color: white;
   padding: 5rem 0;
   text-align: center;
-  clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 90%); /* Added a subtle wave effect */
-  margin-bottom: -6rem; /* Reduced to pull footer up closer */
+  clip-path: polygon(0 0, 100% 10%, 100% 100%, 0 90%);
+  margin-bottom: -6rem;
   position: relative;
-  z-index: 1; /* Ensure CTA is above other content */
+  z-index: 1;
 }
 
 .cta-content h2 {
-  font-size: 2.8rem; /* Slightly larger */
+  font-size: 2.8rem;
   margin-bottom: 1.5rem;
-  font-weight: 800; /* Bolder */
+  font-weight: 800;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .cta-content p {
-  font-size: 1.3rem; /* Slightly larger */
+  font-size: 1.3rem;
   margin-bottom: 3.5rem;
   opacity: 0.95;
   max-width: 700px;
@@ -195,27 +196,27 @@ main {
 
 .cta-buttons {
   display: flex;
-  gap: 1.5rem; /* Increased gap */
+  gap: 1.5rem;
   justify-content: center;
   flex-wrap: wrap;
 }
 
 /* Footer Styles */
 .landing-footer {
-  background: #1f2937; /* Dark background */
+  background: #1f2937;
   color: #f9fafb;
-  padding: 6rem 0 2rem; /* Reduced top padding to pull footer up */
+  padding: 6rem 0 2rem;
   position: relative;
   z-index: 0;
 }
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 2.5fr 1.5fr 2fr; /* Adjusted column widths */
-  gap: 4rem; /* Increased gap */
-  margin-bottom: 2rem; /* Reduced space between grid and bottom footer */
-  border-bottom: 1px solid #374151; /* Subtle separator */
-  padding-bottom: 2rem; /* Reduced padding here as well */
+  grid-template-columns: 2.5fr 1.5fr 2fr;
+  gap: 4rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #374151;
+  padding-bottom: 2rem;
 }
 
 .footer-brand .logo {
@@ -223,7 +224,7 @@ main {
 }
 
 .footer-brand .logo-text {
-  background: linear-gradient(135deg, #dc2626, #ea580c); /* Changed to red gradient */
+  background: linear-gradient(135deg, #dc2626, #ea580c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -238,8 +239,8 @@ main {
 
 .footer-links-group h4,
 .footer-newsletter h4 {
-  color:  #ea580c; /* Changed to red heading */
-  margin-bottom: 1.8rem; /* Increased margin */
+  color: #ea580c;
+  margin-bottom: 1.8rem;
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: 0.05em;
@@ -256,32 +257,32 @@ main {
   color: #d1d5db;
   text-decoration: none;
   display: block;
-  margin-bottom: 0.9rem; /* Increased margin */
+  margin-bottom: 0.9rem;
   transition: color 0.3s ease, transform 0.2s ease;
   font-size: 0.95rem;
 }
 
 .footer-links-group a:hover {
-  color:  #ea580c; /* Changed to red hover color */
-  transform: translateX(5px); /* Subtle hover effect */
+  color: #ea580c;
+  transform: translateX(5px);
 }
 
 .social-links {
   display: flex;
-  gap: 1.2rem; /* Increased gap */
+  gap: 1.2rem;
   margin-top: 1.5rem;
 }
 
 .social-links a {
-  font-size: 1.8rem; /* Larger icons */
+  font-size: 1.8rem;
   transition: transform 0.3s ease, color 0.3s ease;
   display: inline-block;
   color: #9ca3af;
 }
 
 .social-links a:hover {
-  transform: translateY(-5px) scale(1.1); /* More prominent hover */
-  color:  #ea580c; /* Changed to red hover color */
+  transform: translateY(-5px) scale(1.1);
+  color: #ea580c;
 }
 
 .footer-newsletter p {
@@ -314,27 +315,27 @@ main {
 }
 
 .newsletter-form input:focus {
-  border-color: #ea580c; /* Changed to red focus color */
-  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3); /* Changed to red shadow */
+  border-color: #ea580c;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3);
 }
 
 .newsletter-form .btn-primary {
   width: 100%;
   padding: 0.9rem 1rem;
   font-size: 1rem;
-  background: linear-gradient(135deg, #dc2626, #ea580c); /* Changed to red gradient button */
-  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3); /* Changed to red shadow */
-  color: white; /* White text on red button */
+  background: linear-gradient(135deg, #dc2626, #ea580c);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  color: white;
 }
 
 .newsletter-form .btn-primary:hover {
-  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4); /* Changed to red shadow */
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
   transform: translateY(-3px);
 }
 
 .footer-bottom {
   border-top: 1px solid #374151;
-  padding-top: 1.5rem; /* Reduced padding-top here */
+  padding-top: 1.5rem;
   text-align: center;
   color: #9ca3af;
   font-size: 0.85rem;
@@ -346,14 +347,14 @@ main {
 /* Responsive Design */
 @media (max-width: 1024px) {
   .footer-grid {
-    grid-template-columns: 1.5fr 1fr; /* Two columns for tablet */
+    grid-template-columns: 1.5fr 1fr;
   }
   .footer-newsletter {
-    grid-column: span 2; /* Newsletter spans full width */
+    grid-column: span 2;
   }
   .cta-section {
     padding: 4rem 0;
-    margin-bottom: -4rem; /* Adjusted for smaller screens */
+    margin-bottom: -4rem;
   }
   .cta-content h2 {
     font-size: 2.5rem;
@@ -362,7 +363,7 @@ main {
     font-size: 1.15rem;
   }
   .landing-footer {
-    padding: 5rem 0 2rem; /* Adjusted for smaller screens */
+    padding: 5rem 0 2rem;
   }
 }
 
@@ -389,14 +390,14 @@ main {
   }
 
   .footer-grid {
-    grid-template-columns: 1fr; /* Single column for mobile */
+    grid-template-columns: 1fr;
     gap: 3rem;
-    padding-bottom: 1.5rem; /* Reduced padding */
-    margin-bottom: 1.5rem; /* Reduced margin */
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .footer-newsletter {
-    grid-column: span 1; /* Reset span for single column */
+    grid-column: span 1;
   }
 
   .cta-buttons {
@@ -413,7 +414,7 @@ main {
     padding: 0 1.25rem;
   }
   .cta-section {
-    clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%); /* Adjust wave effect for smaller screens */
+    clip-path: polygon(0 0, 100% 5%, 100% 100%, 0 95%);
     margin-bottom: -3rem;
   }
   .landing-footer {
