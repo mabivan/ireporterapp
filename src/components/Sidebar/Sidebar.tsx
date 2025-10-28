@@ -2,17 +2,17 @@ import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/ireportlogo.png';
-import { 
-  FiHome, 
-  FiFileText, 
-  FiPlusSquare, 
-  FiUser, 
-  FiUsers, 
-  FiBarChart2, 
+import {
+  FiHome,
+  FiFileText,
+  FiPlusSquare,
+  FiUser,
+  // FiUsers,         // <--- REMOVED: No longer needed for 'Manage Users'
+  // FiBarChart2,     // <--- REMOVED: No longer needed for 'Analytics'
   FiLogOut,
   FiChevronLeft,
   FiChevronRight,
-  FiSettings,
+  // FiSettings,      // <--- REMOVED: No longer needed for 'Settings'
   FiShield
 } from 'react-icons/fi';
 import './Sidebar.css';
@@ -32,11 +32,11 @@ interface NavItem {
   isAdmin?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ 
-  isCollapsed, 
-  onToggle, 
-  mobileOpen, 
-  onMobileClose 
+const Sidebar: React.FC<SidebarProps> = ({
+  isCollapsed,
+  onToggle,
+  mobileOpen,
+  onMobileClose
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   // Icon components with proper typing
@@ -52,9 +52,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   const FileTextIcon = () => <FiFileText className="nav-icon" />;
   const PlusSquareIcon = () => <FiPlusSquare className="nav-icon" />;
   const UserIcon = () => <FiUser className="nav-icon" />;
-  const UsersIcon = () => <FiUsers className="nav-icon" />;
-  const BarChartIcon = () => <FiBarChart2 className="nav-icon" />;
-  const SettingsIcon = () => <FiSettings className="nav-icon" />;
+  // const UsersIcon = () => <FiUsers className="nav-icon" />;         // <--- REMOVED
+  // const BarChartIcon = () => <FiBarChart2 className="nav-icon" />; // <--- REMOVED
+  // const SettingsIcon = () => <FiSettings className="nav-icon" />;   // <--- REMOVED
   const ShieldIcon = () => <FiShield className="nav-icon" />;
   const LogoutIcon = () => <FiLogOut className="nav-icon logout-icon" />;
   const ChevronLeftIcon = () => <FiChevronLeft className="toggle-icon" />;
@@ -71,14 +71,15 @@ const Sidebar: React.FC<SidebarProps> = ({
   // Admin-only navigation items
   const adminNavItems: NavItem[] = [
     { path: '/admin', icon: <ShieldIcon />, label: 'Admin Dashboard', isAdmin: true },
-    { path: '/admin/users', icon: <UsersIcon />, label: 'Manage Users', isAdmin: true },
-    { path: '/admin/analytics', icon: <BarChartIcon />, label: 'Analytics', isAdmin: true },
-    { path: '/admin/settings', icon: <SettingsIcon />, label: 'Settings', isAdmin: true },
+    // { path: '/admin/users', icon: <UsersIcon />, label: 'Manage Users', isAdmin: true },     // <--- REMOVED
+    // { path: '/admin/analytics', icon: <BarChartIcon />, label: 'Analytics', isAdmin: true }, // <--- REMOVED
+    // { path: '/admin/settings', icon: <SettingsIcon />, label: 'Settings', isAdmin: true },   // <--- REMOVED
   ];
 
   // Combine navigation items based on user role
-  const navItems: NavItem[] = user?.isAdmin 
-    ? [...commonNavItems, ...adminNavItems] 
+  // Admins will see common items + 'Admin Dashboard'
+  const navItems: NavItem[] = user?.isAdmin
+    ? [...commonNavItems, ...adminNavItems]
     : commonNavItems;
 
   const handleNavClick = () => {
@@ -91,14 +92,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     <>
       {/* Mobile Overlay */}
       {mobileOpen && (
-        <div 
+        <div
           className="mobile-overlay"
           onClick={onMobileClose}
         />
       )}
 
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
-        
+
         {/* Toggle Button */}
         <div className="sidebar-toggle" onClick={onToggle}>
           {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -107,9 +108,9 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Header with Logo */}
         <div className="sidebar-header">
           <div className="logo-container">
-            <img 
+            <img
               src={logo}
-              alt="iReporter Logo" 
+              alt="iReporter Logo"
               className="sidebar-logo"
             />
             {!isCollapsed && <span className="logo-text">iReporter</span>}

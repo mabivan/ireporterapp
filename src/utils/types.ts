@@ -11,6 +11,18 @@ export interface User {
   password: string;
 }
 
+export interface AdminAction {
+  id: string;
+  adminId: number;
+  adminName: string;
+  action: 'status_change' | 'reject' | 'approve' | 'view';
+  reportId: number;
+  oldStatus?: string;
+  newStatus?: string;
+  timestamp: Date;
+  notes?: string;
+}
+
 export interface Incident {
   id: number;
   createdOn: Date;
@@ -22,6 +34,9 @@ export interface Incident {
   images: string[];
   videos: string[];
   comment: string;
+  lastModifiedBy?: number;
+  lastModifiedAt?: Date;
+  adminActions?: AdminAction[];
 }
 
 export interface AuthContextType {

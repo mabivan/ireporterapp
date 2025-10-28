@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Added useEffect for initial form data
 import { useAuth } from '../../context/AuthContext';
 import { useReports } from '../../context/ReportContext';
 import Sidebar from '../../components/Sidebar/Sidebar';
@@ -10,12 +10,12 @@ const Profile: React.FC = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  
+
   const { user } = useAuth();
   const { getUserReports } = useReports();
-  
+
   const userReports = getUserReports(user?.id || 0);
-  
+
   const [formData, setFormData] = useState({
     firstname: user?.firstname || '',
     lastname: user?.lastname || '',
@@ -25,12 +25,25 @@ const Profile: React.FC = () => {
     username: user?.username || '',
   });
 
+  // Effect to update form data if user prop changes (e.g., after initial load or profile update)
+  useEffect(() => {
+    setFormData({
+      firstname: user?.firstname || '',
+      lastname: user?.lastname || '',
+      othernames: user?.othernames || '',
+      email: user?.email || '',
+      phoneNumber: user?.phoneNumber || '',
+      username: user?.username || '',
+    });
+  }, [user]); // Re-run when user object changes
+
+
   const stats = {
     totalReports: userReports.length,
     redFlags: userReports.filter(r => r.type === 'red-flag').length,
     interventions: userReports.filter(r => r.type === 'intervention').length,
     resolved: userReports.filter(r => r.status === 'resolved').length,
-    pending: userReports.filter(r => 
+    pending: userReports.filter(r =>
       r.status === 'draft' || r.status === 'under investigation'
     ).length,
     rejected: userReports.filter(r => r.status === 'rejected').length,
@@ -46,11 +59,14 @@ const Profile: React.FC = () => {
   const handleSave = () => {
     // In a real app, this would update the user profile via API
     console.log('Save profile:', formData);
+    // You would typically call an update function from your AuthContext here
+    // For example: updateUserProfile(formData);
     setIsEditing(false);
     alert('Profile updated successfully!');
   };
 
   const handleCancel = () => {
+    // Reset to current user data
     setFormData({
       firstname: user?.firstname || '',
       lastname: user?.lastname || '',
@@ -63,11 +79,15 @@ const Profile: React.FC = () => {
   };
 
   const getInitials = () => {
-    return `${user?.firstname?.charAt(0)}${user?.lastname?.charAt(0)}`.toUpperCase();
+    const first = user?.firstname?.charAt(0) || '';
+    const last = user?.lastname?.charAt(0) || '';
+    return `${first}${last}`.toUpperCase();
   };
 
   const getFullName = () => {
-    return `${user?.firstname} ${user?.lastname}`;
+    const first = user?.firstname || '';
+    const last = user?.lastname || '';
+    return `${first} ${last}`.trim();
   };
 
   const handleSidebarToggle = () => {
@@ -90,7 +110,7 @@ const Profile: React.FC = () => {
         mobileOpen={isMobileOpen}
         onMobileClose={handleMobileClose}
       />
-      
+
       <div className={`profile-main ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <Header
           title="Profile"
@@ -98,7 +118,7 @@ const Profile: React.FC = () => {
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
         />
-        
+
         <div className="profile-content">
           <div className="profile-header">
             <h1 className="profile-title">Profile Settings</h1>
@@ -110,7 +130,7 @@ const Profile: React.FC = () => {
           <div className="profile-grid">
             {/* Sidebar */}
             <div className="profile-sidebar">
-              <div className="profile-avatar">
+              <div className="profile-avatar-card"> {/* Renamed for clarity, using card styles */}
                 <div className="avatar-image">
                   {getInitials()}
                 </div>
@@ -120,7 +140,7 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="profile-stats">
+              <div className="profile-stats-card"> {/* Renamed for clarity, using card styles */}
                 <h3 className="stats-title">Reporting Statistics</h3>
                 <div className="stats-list">
                   <div className="stat-item">
@@ -152,10 +172,10 @@ const Profile: React.FC = () => {
             </div>
 
             {/* Main Form */}
-            <div className="profile-form">
+            <div className="profile-form-card"> {/* Renamed for clarity, using card styles */}
               <div className="form-section">
                 <h3 className="form-section-title">Personal Information</h3>
-                
+
                 <div className="form-row">
                   <div className="form-group">
                     <label className="form-label">First Name</label>
@@ -210,7 +230,7 @@ const Profile: React.FC = () => {
 
               <div className="form-section">
                 <h3 className="form-section-title">Contact Information</h3>
-                
+
                 <div className="form-group">
                   <label className="form-label">Email Address</label>
                   <input

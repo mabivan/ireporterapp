@@ -5,6 +5,7 @@ import { ReportProvider } from './context/ReportContext';
 import { useAuth } from './context/AuthContext';
 
 // Pages
+import Landing from './pages/Landing/Landing';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import Dashboard from './pages/Dashboard/Dashboard';
@@ -12,6 +13,7 @@ import AdminDashboard from './pages/Admin/AdminDashboard';
 import Profile from './pages/Profile/Profile';
 import CreateReport from './pages/CreateReport/CreateReport';
 import EditReport from './pages/EditReport/EditReport';
+import Reports from './pages/Reports/Reports'; // ← ADD THIS IMPORT
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -21,65 +23,77 @@ const AppRoutes: React.FC = () => {
 
   return (
     <Routes>
-      <Route 
-        path="/" 
-        element={
-          isAuthenticated ? 
-            <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace /> 
-            : <Navigate to="/login" replace />
-        } 
-      />
-      <Route 
-        path="/login" 
+      {/* Always show landing page at root, regardless of authentication */}
+      <Route path="/" element={<Landing />} />
+      
+      <Route
+        path="/login"
         element={
           !isAuthenticated ? <Login /> : <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace />
-        } 
+        }
       />
-      <Route 
-        path="/signup" 
+      <Route
+        path="/signup"
         element={
           !isAuthenticated ? <Signup /> : <Navigate to={user?.isAdmin ? "/admin" : "/dashboard"} replace />
-        } 
+        }
       />
-      <Route 
-        path="/dashboard" 
+      <Route
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <Dashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/admin" 
+      <Route
+        path="/admin"
         element={
           <ProtectedRoute adminOnly={true}>
             <AdminDashboard />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/profile" 
+      <Route
+        path="/profile"
         element={
           <ProtectedRoute>
             <Profile />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/create-report" 
+      <Route
+        path="/create-report"
         element={
           <ProtectedRoute>
             <CreateReport />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/edit-report/:reportId" 
+      <Route
+        path="/edit-report/:reportId"
         element={
           <ProtectedRoute>
             <EditReport />
           </ProtectedRoute>
-        } 
+        }
+      />
+      {/* UPDATE THESE ROUTES */}
+      <Route
+        path="/my-reports"
+        element={
+          <ProtectedRoute>
+            <Reports /> {/* ← CHANGED FROM Dashboard TO Reports */}
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <Reports /> {/* ← CHANGED FROM Dashboard TO Reports */}
+          </ProtectedRoute>
+        }
       />
       <Route path="*" element={<NotFound />} />
     </Routes>

@@ -1,7 +1,7 @@
 .header {
   background: white;
   border-bottom: 1px solid #e2e8f0;
-  padding: 0 24px;
+  padding: 0 2rem;
   height: 70px;
   display: flex;
   align-items: center;
@@ -14,7 +14,7 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1.5rem;
 }
 
 .menu-toggle {
@@ -22,7 +22,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 0.5rem;
   border-radius: 6px;
   color: #64748b;
   transition: all 0.3s ease;
@@ -34,7 +34,7 @@
 }
 
 .header-title {
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #1f2937;
 }
@@ -42,7 +42,7 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1.5rem;
 }
 
 .search-bar {
@@ -52,10 +52,10 @@
 
 .search-input {
   width: 100%;
-  padding: 10px 16px 10px 40px;
+  padding: 0.625rem 1rem 0.625rem 2.5rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 0.875rem;
   background: #f8fafc;
   transition: all 0.3s ease;
 }
@@ -69,7 +69,7 @@
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   color: #64748b;
@@ -78,8 +78,8 @@
 .user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -90,8 +90,8 @@
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   background: #3b82f6;
   border-radius: 50%;
   display: flex;
@@ -99,7 +99,8 @@
   justify-content: center;
   color: white;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.875rem;
+  flex-shrink: 0;
 }
 
 .user-details {
@@ -109,12 +110,12 @@
 
 .user-name {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #1f2937;
 }
 
 .user-role {
-  font-size: 12px;
+  font-size: 0.8rem;
   color: #64748b;
 }
 
@@ -126,19 +127,27 @@
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .header {
-    padding: 0 16px;
+    padding: 0 1rem;
   }
-  
+
   .menu-toggle {
     display: block;
   }
-  
+
   .search-bar {
     width: 200px;
   }
-  
+
   .user-details {
     display: none;
+  }
+
+  .header-left {
+    gap: 1rem;
+  }
+
+  .header-right {
+    gap: 1rem;
   }
 }
 
@@ -146,8 +155,8 @@
   .search-bar {
     display: none;
   }
-  
+
   .header-title {
-    font-size: 18px;
+    font-size: 1rem;
   }
 }

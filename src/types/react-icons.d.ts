@@ -18,5 +18,18 @@ declare module 'react-icons/fi' {
   export const FiMenu: FC<IconProps>;
   export const FiSearch: FC<IconProps>;
   export const FiShield: FC<IconProps>;
-  export const FiSettings: FC<IconProps>;
+  export const FiSettings: FC<IconProps>; 
+  export const FiTrendingUp: FC<IconProps>;  
+  export const FiFlag: FC<IconProps>; 
+  export const FiTrendingUp: FC<IconProps>;
+  export const FiTool: FC<IconProps>;
+  export const FiCheckCircle: FC<IconProps>;
+  export const FiClock: FC<IconProps>;
+  export const FiAlertTriangle: FC<IconProps>;
+  export const FiAlertTriangle: FC<IconProps>;
+  export const FiFilter: FC<IconProps>;
+  export const FiPlus: FC<IconProps>;
+  export const  FiXCircle : FC<IconProps>;
+    // For Red Flags - represents reporting/flags
+ 
 }
