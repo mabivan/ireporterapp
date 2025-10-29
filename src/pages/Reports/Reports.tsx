@@ -1,59 +1,62 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useReports } from '../../context/ReportContext';
-import ReportsTable from '../../components/ReportsTable/ReportsTable';
-import { Incident } from '../../utils/types';
-import './Reports.css'; // Changed CSS filename
+import React, { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useReports } from "../../context/ReportContext";
+import ReportsTable from "../../components/ReportsTable/ReportsTable";
+import { Incident } from "../../utils/types";
+import "./Reports.css"; // Changed CSS filename
 
 // Icons
-import {
-  FiFilter,
-  FiSearch,
-  FiPlus,
-  FiBarChart2
-} from 'react-icons/fi';
+import { FiFilter, FiSearch, FiPlus, FiBarChart2 } from "react-icons/fi";
 
 const Reports: React.FC = () => {
   const { user } = useAuth();
   const { getUserReports, deleteReport } = useReports();
-  
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
 
-  const userReports = useMemo(() => getUserReports(user?.id || 0), [user?.id, getUserReports]);
+  const userReports = useMemo(
+    () => getUserReports(Number(user?.id || 0)),
+    [user?.id, getUserReports]
+  );
 
   const filteredReports = useMemo(() => {
-    return userReports.filter(report => {
-      const matchesSearch = 
+    return userReports.filter((report) => {
+      const matchesSearch =
         report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         report.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
         report.location.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === 'all' || report.status === statusFilter;
-      const matchesType = typeFilter === 'all' || report.type === typeFilter;
-      
+
+      const matchesStatus =
+        statusFilter === "all" || report.status === statusFilter;
+      const matchesType = typeFilter === "all" || report.type === typeFilter;
+
       return matchesSearch && matchesStatus && matchesType;
     });
   }, [userReports, searchTerm, statusFilter, typeFilter]);
 
   const handleDeleteReport = (id: number) => {
-    const report = userReports.find(r => r.id === id);
+    const report = userReports.find((r) => r.id === id);
     if (!report) return;
 
-    if (report.status !== 'draft') {
-      alert('You can only delete reports that are in draft status.');
+    if (report.status !== "draft") {
+      alert("You can only delete reports that are in draft status.");
       return;
     }
 
-    if (window.confirm(`Are you sure you want to delete "${report.title}"? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${report.title}"? This action cannot be undone.`
+      )
+    ) {
       const success = deleteReport(id);
       if (success) {
-        alert('Report deleted successfully!');
+        alert("Report deleted successfully!");
       } else {
-        alert('Failed to delete report. Please try again.');
+        alert("Failed to delete report. Please try again.");
       }
     }
   };
@@ -67,7 +70,7 @@ const Reports: React.FC = () => {
 📋 Report Details:
 
 Title: ${report.title}
-Type: ${report.type === 'red-flag' ? 'Red Flag 🚩' : 'Intervention ⚙️'}
+Type: ${report.type === "red-flag" ? "Red Flag 🚩" : "Intervention ⚙️"}
 Status: ${report.status}
 Date: ${new Date(report.createdOn).toLocaleDateString()}
 Location: ${report.location}
@@ -75,20 +78,21 @@ Location: ${report.location}
 Description:
 ${report.comment}
 
-${report.images.length > 0 ? `📷 Images: ${report.images.length} attached` : ''}
-${report.videos.length > 0 ? `🎥 Videos: ${report.videos.length} attached` : ''}
+${report.images.length > 0 ? `📷 Images: ${report.images.length} attached` : ""}
+${report.videos.length > 0 ? `🎥 Videos: ${report.videos.length} attached` : ""}
     `.trim();
-    
+
     alert(details);
   };
 
   const clearFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('all');
-    setTypeFilter('all');
+    setSearchTerm("");
+    setStatusFilter("all");
+    setTypeFilter("all");
   };
 
-  const hasActiveFilters = searchTerm || statusFilter !== 'all' || typeFilter !== 'all';
+  const hasActiveFilters =
+    searchTerm || statusFilter !== "all" || typeFilter !== "all";
 
   return (
     <div className="reports-page-container">
@@ -122,14 +126,16 @@ ${report.videos.length > 0 ? `🎥 Videos: ${report.videos.length} attached` : '
               className="reports-page-search-input"
             />
           </div>
-          
-          <button 
-            className={`reports-page-filter-toggle ${showFilters ? 'reports-page-filter-active' : ''}`}
+
+          <button
+            className={`reports-page-filter-toggle ${showFilters ? "reports-page-filter-active" : ""}`}
             onClick={() => setShowFilters(!showFilters)}
           >
             <FiFilter className="reports-page-filter-icon" />
             Filters
-            {hasActiveFilters && <span className="reports-page-filter-badge"></span>}
+            {hasActiveFilters && (
+              <span className="reports-page-filter-badge"></span>
+            )}
           </button>
         </div>
 
@@ -137,8 +143,8 @@ ${report.videos.length > 0 ? `🎥 Videos: ${report.videos.length} attached` : '
           <div className="reports-page-filters">
             <div className="reports-page-filter-group">
               <label className="reports-page-filter-label">Status</label>
-              <select 
-                value={statusFilter} 
+              <select
+                value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="reports-page-filter-select"
               >
@@ -152,8 +158,8 @@ ${report.videos.length > 0 ? `🎥 Videos: ${report.videos.length} attached` : '
 
             <div className="reports-page-filter-group">
               <label className="reports-page-filter-label">Type</label>
-              <select 
-                value={typeFilter} 
+              <select
+                value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
                 className="reports-page-filter-select"
               >
@@ -164,7 +170,10 @@ ${report.videos.length > 0 ? `🎥 Videos: ${report.videos.length} attached` : '
             </div>
 
             {hasActiveFilters && (
-              <button className="reports-page-clear-filters" onClick={clearFilters}>
+              <button
+                className="reports-page-clear-filters"
+                onClick={clearFilters}
+              >
                 Clear All
               </button>
             )}
@@ -199,10 +208,9 @@ ${report.videos.length > 0 ? `🎥 Videos: ${report.videos.length} attached` : '
               <div className="reports-page-empty-icon">📋</div>
               <h3>No reports found</h3>
               <p>
-                {hasActiveFilters 
-                  ? 'Try adjusting your filters or search terms'
-                  : 'Get started by creating your first report'
-                }
+                {hasActiveFilters
+                  ? "Try adjusting your filters or search terms"
+                  : "Get started by creating your first report"}
               </p>
               {!hasActiveFilters && (
                 <Link to="/create-report" className="reports-page-create-btn">

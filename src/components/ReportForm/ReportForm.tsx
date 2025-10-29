@@ -1,29 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useReports } from '../../context/ReportContext';
-import MapPicker from '../MapPicker/MapPicker';
-import { Incident } from '../../utils/types';
-import './ReportForm.css';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useReports } from "../../context/ReportContext";
+import MapPicker from "../MapPicker/MapPicker";
+import { Incident } from "../../utils/types";
+import "./ReportForm.css";
 
 interface ReportFormProps {
   report?: Incident;
   isEditing?: boolean;
 }
 
-const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) => {
+const ReportForm: React.FC<ReportFormProps> = ({
+  report,
+  isEditing = false,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const { addReport, updateReport } = useReports();
 
   const [formData, setFormData] = useState({
-    type: 'red-flag' as 'red-flag' | 'intervention',
-    title: '',
-    location: '',
-    latitude: '',
-    longitude: '',
-    comment: '',
+    type: "red-flag" as "red-flag" | "intervention",
+    title: "",
+    location: "",
+    latitude: "",
+    longitude: "",
+    comment: "",
     images: [] as string[],
     videos: [] as string[],
   });
@@ -32,32 +35,40 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!isEditing && (formData.title || formData.comment || formData.latitude)) {
+    if (
+      !isEditing &&
+      (formData.title || formData.comment || formData.latitude)
+    ) {
       const draft = {
         ...formData,
-        lastSaved: new Date().toISOString()
+        lastSaved: new Date().toISOString(),
       };
-      localStorage.setItem('ireporter_draft', JSON.stringify(draft));
+      localStorage.setItem("ireporter_draft", JSON.stringify(draft));
     }
   }, [formData, isEditing]);
 
   useEffect(() => {
     if (!isEditing) {
-      const savedDraft = localStorage.getItem('ireporter_draft');
+      const savedDraft = localStorage.getItem("ireporter_draft");
       if (savedDraft) {
         try {
           const draft = JSON.parse(savedDraft);
           const draftTime = new Date(draft.lastSaved);
           const currentTime = new Date();
-          const hoursDiff = (currentTime.getTime() - draftTime.getTime()) / (1000 * 60 * 60);
-          
+          const hoursDiff =
+            (currentTime.getTime() - draftTime.getTime()) / (1000 * 60 * 60);
+
           if (hoursDiff < 1) {
-            if (confirm('You have a recently saved draft. Would you like to continue where you left off?')) {
+            if (
+              confirm(
+                "You have a recently saved draft. Would you like to continue where you left off?"
+              )
+            ) {
               setFormData(draft);
             }
           }
         } catch (error) {
-          console.error('Error loading draft:', error);
+          console.error("Error loading draft:", error);
         }
       }
     }
@@ -66,14 +77,16 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
   useEffect(() => {
     if (!isEditing) {
       const searchParams = new URLSearchParams(location.search);
-      const typeParam = searchParams.get('type');
-      if (typeParam === 'red-flag' || typeParam === 'intervention') {
-        setFormData(prev => ({ ...prev, type: typeParam }));
+      const typeParam = searchParams.get("type");
+      if (typeParam === "red-flag" || typeParam === "intervention") {
+        setFormData((prev) => ({ ...prev, type: typeParam }));
       }
     }
 
     if (isEditing && report) {
-      const [lat, lng] = report.location.split(',').map(coord => coord.trim());
+      const [lat, lng] = report.location
+        .split(",")
+        .map((coord) => coord.trim());
       setFormData({
         type: report.type,
         title: report.title,
@@ -91,93 +104,118 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
     const newErrors: Record<string, string> = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
+      newErrors.title = "Title is required";
     } else if (formData.title.trim().length < 5) {
-      newErrors.title = 'Title must be at least 5 characters long';
+      newErrors.title = "Title must be at least 5 characters long";
     }
 
     if (!formData.comment.trim()) {
-      newErrors.comment = 'Description is required';
+      newErrors.comment = "Description is required";
     } else if (formData.comment.trim().length < 10) {
-      newErrors.comment = 'Description must be at least 10 characters long';
+      newErrors.comment = "Description must be at least 10 characters long";
     }
 
     if (!formData.latitude || !formData.longitude) {
-      newErrors.location = 'Please select a location on the map';
+      newErrors.location = "Please select a location on the map";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleLocationSelect = (lat: number, lng: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       latitude: lat.toString(),
       longitude: lng.toString(),
-      location: `${lat},${lng}`
+      location: `${lat},${lng}`,
     }));
-    
+
     if (errors.location) {
-      setErrors(prev => ({ ...prev, location: '' }));
+      setErrors((prev) => ({ ...prev, location: "" }));
     }
   };
 
-  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>, mediaType: 'images' | 'videos') => {
+  const handleMediaUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    mediaType: "images" | "videos"
+  ) => {
     const files = e.target.files;
     if (!files) return;
 
     // No size limits - only validate file types
-    const validFiles = Array.from(files).filter(file => {
-      if (mediaType === 'images') {
-        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const validFiles = Array.from(files).filter((file) => {
+      if (mediaType === "images") {
+        const validTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+        ];
         return validTypes.includes(file.type);
       } else {
-        const validTypes = ['video/mp4', 'video/quicktime', 'video/avi', 'video/mkv', 'video/webm', 'video/x-msvideo'];
+        const validTypes = [
+          "video/mp4",
+          "video/quicktime",
+          "video/avi",
+          "video/mkv",
+          "video/webm",
+          "video/x-msvideo",
+        ];
         return validTypes.includes(file.type);
       }
     });
 
     if (validFiles.length !== files.length) {
-      alert(`Some files were skipped. Please ensure you're uploading supported file types.`);
+      alert(
+        `Some files were skipped. Please ensure you're uploading supported file types.`
+      );
     }
 
-    const newMedia = validFiles.map(file => URL.createObjectURL(file));
-    
-    setFormData(prev => ({
+    const newMedia = validFiles.map((file) => URL.createObjectURL(file));
+
+    setFormData((prev) => ({
       ...prev,
-      [mediaType]: [...prev[mediaType], ...newMedia]
+      [mediaType]: [...prev[mediaType], ...newMedia],
     }));
 
-    e.target.value = '';
+    e.target.value = "";
   };
 
-  const removeMedia = (index: number, mediaType: 'images' | 'videos') => {
-    setFormData(prev => ({
+  const removeMedia = (index: number, mediaType: "images" | "videos") => {
+    setFormData((prev) => ({
       ...prev,
-      [mediaType]: prev[mediaType].filter((_, i) => i !== index)
+      [mediaType]: prev[mediaType].filter((_, i) => i !== index),
     }));
   };
 
   const clearDraft = () => {
-    if (confirm('Are you sure you want to clear your draft? This action cannot be undone.')) {
-      localStorage.removeItem('ireporter_draft');
+    if (
+      confirm(
+        "Are you sure you want to clear your draft? This action cannot be undone."
+      )
+    ) {
+      localStorage.removeItem("ireporter_draft");
       setFormData({
-        type: 'red-flag',
-        title: '',
-        location: '',
-        latitude: '',
-        longitude: '',
-        comment: '',
+        type: "red-flag",
+        title: "",
+        location: "",
+        latitude: "",
+        longitude: "",
+        comment: "",
         images: [],
         videos: [],
       });
@@ -186,7 +224,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -203,12 +241,12 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
           images: formData.images,
           videos: formData.videos,
         });
-        
+
         if (success) {
-          alert('✅ Report updated successfully!');
-          navigate('/dashboard');
+          alert("✅ Report updated successfully!");
+          navigate("/dashboard");
         } else {
-          alert('❌ Failed to update report. Please try again.');
+          alert("❌ Failed to update report. Please try again.");
         }
       } else {
         const newReportId = addReport({
@@ -218,21 +256,21 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
           comment: formData.comment,
           images: formData.images,
           videos: formData.videos,
-          createdBy: user?.id || 0,
-          status: 'draft',
+          createdBy: Number(user?.id || 0),
+          status: "draft",
         });
-        
+
         if (newReportId) {
-          localStorage.removeItem('ireporter_draft');
-          alert('✅ Report created successfully!');
-          navigate('/dashboard');
+          localStorage.removeItem("ireporter_draft");
+          alert("✅ Report created successfully!");
+          navigate("/dashboard");
         } else {
-          alert('❌ Failed to create report. Please try again.');
+          alert("❌ Failed to create report. Please try again.");
         }
       }
     } catch (error) {
-      alert('❌ An error occurred. Please try again.');
-      console.error('Form submission error:', error);
+      alert("❌ An error occurred. Please try again.");
+      console.error("Form submission error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -240,41 +278,43 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
 
   const handleCancel = () => {
     if (formData.title || formData.comment || formData.latitude) {
-      if (confirm('You have unsaved changes. Are you sure you want to leave?')) {
-        navigate('/dashboard');
+      if (
+        confirm("You have unsaved changes. Are you sure you want to leave?")
+      ) {
+        navigate("/dashboard");
       }
     } else {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   };
 
-  const initialLocation = formData.latitude && formData.longitude 
-    ? { lat: parseFloat(formData.latitude), lng: parseFloat(formData.longitude) }
-    : undefined;
+  const initialLocation =
+    formData.latitude && formData.longitude
+      ? {
+          lat: parseFloat(formData.latitude),
+          lng: parseFloat(formData.longitude),
+        }
+      : undefined;
 
-  const hasUnsavedChanges = formData.title || formData.comment || formData.latitude;
+  const hasUnsavedChanges =
+    formData.title || formData.comment || formData.latitude;
 
   return (
     <div className="report-form">
       <div className="form-header">
         <h1 className="form-title">
-          {isEditing ? 'Edit Report' : 'Create New Report'}
+          {isEditing ? "Edit Report" : "Create New Report"}
         </h1>
         <p className="form-subtitle">
-          {isEditing 
-            ? 'Update your report details' 
-            : 'Report corruption or request government intervention'
-          }
+          {isEditing
+            ? "Update your report details"
+            : "Report corruption or request government intervention"}
         </p>
-        
+
         {!isEditing && hasUnsavedChanges && (
           <div className="draft-notice">
             <span>💾 Draft auto-saved</span>
-            <button 
-              type="button" 
-              className="btn-link"
-              onClick={clearDraft}
-            >
+            <button type="button" className="btn-link" onClick={clearDraft}>
               Clear Draft
             </button>
           </div>
@@ -285,28 +325,34 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
         <div className="form-group">
           <label className="form-label">Report Type *</label>
           <div className="type-selector">
-            <label className={`type-option ${formData.type === 'red-flag' ? 'selected' : ''}`}>
+            <label
+              className={`type-option ${formData.type === "red-flag" ? "selected" : ""}`}
+            >
               <input
                 type="radio"
                 name="type"
                 value="red-flag"
-                checked={formData.type === 'red-flag'}
+                checked={formData.type === "red-flag"}
                 onChange={handleChange}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
               />
               <div className="type-icon">🚩</div>
               <div className="type-label">Red Flag</div>
-              <div className="type-description">Report corruption incidents</div>
+              <div className="type-description">
+                Report corruption incidents
+              </div>
             </label>
-            
-            <label className={`type-option ${formData.type === 'intervention' ? 'selected' : ''}`}>
+
+            <label
+              className={`type-option ${formData.type === "intervention" ? "selected" : ""}`}
+            >
               <input
                 type="radio"
                 name="type"
                 value="intervention"
-                checked={formData.type === 'intervention'}
+                checked={formData.type === "intervention"}
                 onChange={handleChange}
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
               />
               <div className="type-icon">⚙️</div>
               <div className="type-label">Intervention</div>
@@ -329,7 +375,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
             />
             <div className="input-info">
               {formData.title.length}/100 characters
-              {errors.title && <span className="error-text">{errors.title}</span>}
+              {errors.title && (
+                <span className="error-text">{errors.title}</span>
+              )}
             </div>
           </div>
 
@@ -346,19 +394,23 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
             />
             <div className="input-info">
               {formData.comment.length}/1000 characters
-              {errors.comment && <span className="error-text">{errors.comment}</span>}
+              {errors.comment && (
+                <span className="error-text">{errors.comment}</span>
+              )}
             </div>
           </div>
         </div>
 
         <div className="form-group form-full-width">
           <label className="form-label">Location *</label>
-          <MapPicker 
+          <MapPicker
             onLocationSelect={handleLocationSelect}
             initialLocation={initialLocation}
           />
-          {errors.location && <span className="error-text">{errors.location}</span>}
-          
+          {errors.location && (
+            <span className="error-text">{errors.location}</span>
+          )}
+
           {formData.latitude && formData.longitude && (
             <div className="coordinates-info">
               Selected: {formData.latitude}, {formData.longitude}
@@ -373,12 +425,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
               type="file"
               multiple
               accept="image/jpeg,image/png,image/gif,image/webp"
-              onChange={(e) => handleMediaUpload(e, 'images')}
-              style={{ display: 'none' }}
+              onChange={(e) => handleMediaUpload(e, "images")}
+              style={{ display: "none" }}
             />
             <div className="upload-icon">📷</div>
             <div className="upload-text">Upload Images</div>
-            <div className="upload-subtext">JPEG, PNG, GIF, WEBP • No size limits</div>
+            <div className="upload-subtext">
+              JPEG, PNG, GIF, WEBP • No size limits
+            </div>
           </label>
 
           {formData.images.length > 0 && (
@@ -388,7 +442,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
                 <button
                   type="button"
                   className="btn-link"
-                  onClick={() => setFormData(prev => ({ ...prev, images: [] }))}
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, images: [] }))
+                  }
                 >
                   Remove All
                 </button>
@@ -400,7 +456,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
                     <button
                       type="button"
                       className="remove-media"
-                      onClick={() => removeMedia(index, 'images')}
+                      onClick={() => removeMedia(index, "images")}
                       title="Remove image"
                     >
                       ×
@@ -419,12 +475,14 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
               type="file"
               multiple
               accept="video/mp4,video/quicktime,video/avi,video/mkv,video/webm,video/x-msvideo"
-              onChange={(e) => handleMediaUpload(e, 'videos')}
-              style={{ display: 'none' }}
+              onChange={(e) => handleMediaUpload(e, "videos")}
+              style={{ display: "none" }}
             />
             <div className="upload-icon">🎥</div>
             <div className="upload-text">Upload Videos</div>
-            <div className="upload-subtext">MP4, MOV, AVI, MKV, WEBM • No size limits</div>
+            <div className="upload-subtext">
+              MP4, MOV, AVI, MKV, WEBM • No size limits
+            </div>
           </label>
 
           {formData.videos.length > 0 && (
@@ -434,7 +492,9 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
                 <button
                   type="button"
                   className="btn-link"
-                  onClick={() => setFormData(prev => ({ ...prev, videos: [] }))}
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, videos: [] }))
+                  }
                 >
                   Remove All
                 </button>
@@ -446,7 +506,7 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
                     <button
                       type="button"
                       className="remove-media"
-                      onClick={() => removeMedia(index, 'videos')}
+                      onClick={() => removeMedia(index, "videos")}
                       title="Remove video"
                     >
                       ×
@@ -472,7 +532,11 @@ const ReportForm: React.FC<ReportFormProps> = ({ report, isEditing = false }) =>
             className="btn btn-primary"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Saving...' : isEditing ? 'Update Report' : 'Create Report'}
+            {isSubmitting
+              ? "Saving..."
+              : isEditing
+                ? "Update Report"
+                : "Create Report"}
           </button>
         </div>
       </form>

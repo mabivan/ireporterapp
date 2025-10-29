@@ -1,55 +1,64 @@
 // Updated Dashboard.tsx - Only 4 professional cards
-import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { useReports } from '../../context/ReportContext';
-import Sidebar from '../../components/Sidebar/Sidebar';
-import Header from '../../components/Header/Header';
-import StatsCard from '../../components/StatsCard/StatsCard';
-import ReportsTable from '../../components/ReportsTable/ReportsTable';
-import { Incident } from '../../utils/types';
-import { formatDate } from '../../utils/helpers';
-import './Dashboard.css';
+import React, { useState, useEffect, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { useReports } from "../../context/ReportContext";
+import Sidebar from "../../components/Sidebar/Sidebar";
+import Header from "../../components/Header/Header";
+import StatsCard from "../../components/StatsCard/StatsCard";
+import ReportsTable from "../../components/ReportsTable/ReportsTable";
+import { Incident } from "../../utils/types";
+import { formatDate } from "../../utils/helpers";
+import "./Dashboard.css";
 
 // Import only the icons we need for 4 cards
 import {
-  FiFileText,      // For Total Reports - represents documents/files
-  FiFlag,          // For Red Flags - represents reporting/flags
-  FiTool,          // For Interventions - represents tools/actions
-  FiTrendingUp,    // For Success Rate - represents growth/trends
-} from 'react-icons/fi';
+  FiFileText, // For Total Reports - represents documents/files
+  FiFlag, // For Red Flags - represents reporting/flags
+  FiTool, // For Interventions - represents tools/actions
+  FiTrendingUp, // For Success Rate - represents growth/trends
+} from "react-icons/fi";
 
 const Dashboard: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   const { user } = useAuth();
   const { getUserReports, deleteReport } = useReports();
   const navigate = useNavigate();
 
-  const userReports = useMemo(() => getUserReports(user?.id || 0), [user?.id, getUserReports]);
+  const userReports = useMemo(
+    () => getUserReports(Number(user?.id || 0)),
+    [user?.id, getUserReports]
+  );
 
   // Calculate statistics for 4 cards only
   const stats = useMemo(() => {
     const totalReports = userReports.length;
-    const redFlags = userReports.filter(r => r.type === 'red-flag').length;
-    const interventions = userReports.filter(r => r.type === 'intervention').length;
-    const resolved = userReports.filter(r => r.status === 'resolved').length;
-    
+    const redFlags = userReports.filter((r) => r.type === "red-flag").length;
+    const interventions = userReports.filter(
+      (r) => r.type === "intervention"
+    ).length;
+    const resolved = userReports.filter((r) => r.status === "resolved").length;
+
     // Success rate (resolved reports percentage)
-    const successRate = totalReports > 0 ? Math.round((resolved / totalReports) * 100) : 0;
+    const successRate =
+      totalReports > 0 ? Math.round((resolved / totalReports) * 100) : 0;
 
     return {
       totalReports,
       redFlags,
       interventions,
-      successRate
+      successRate,
     };
   }, [userReports]);
 
   const recentReports = userReports
-    .sort((a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime()
+    )
     .slice(0, 5);
 
   const handleViewReport = (report: Incident) => {
@@ -57,7 +66,7 @@ const Dashboard: React.FC = () => {
 Report Details:
 
 Title: ${report.title}
-Type: ${report.type === 'red-flag' ? 'Red Flag 🚩' : 'Intervention ⚙️'}
+Type: ${report.type === "red-flag" ? "Red Flag 🚩" : "Intervention ⚙️"}
 Status: ${report.status}
 Date: ${formatDate(new Date(report.createdOn))}
 Location: ${report.location}
@@ -65,8 +74,8 @@ Location: ${report.location}
 Description:
 ${report.comment}
 
-${report.images.length > 0 ? `Images: ${report.images.length} attached` : ''}
-${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
+${report.images.length > 0 ? `Images: ${report.images.length} attached` : ""}
+${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ""}
     `;
     alert(details);
   };
@@ -76,20 +85,24 @@ ${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
   };
 
   const handleDeleteReport = (id: number) => {
-    const report = userReports.find(r => r.id === id);
+    const report = userReports.find((r) => r.id === id);
     if (!report) return;
 
-    if (report.status !== 'draft') {
-      alert('You can only delete reports that are in draft status.');
+    if (report.status !== "draft") {
+      alert("You can only delete reports that are in draft status.");
       return;
     }
 
-    if (window.confirm(`Are you sure you want to delete "${report.title}"? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${report.title}"? This action cannot be undone.`
+      )
+    ) {
       const success = deleteReport(id);
       if (success) {
-        alert('Report deleted successfully!');
+        alert("Report deleted successfully!");
       } else {
-        alert('Failed to delete report. Please try again.');
+        alert("Failed to delete report. Please try again.");
       }
     }
   };
@@ -115,7 +128,9 @@ ${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
         onMobileClose={handleMobileClose}
       />
 
-      <div className={`dashboard-main ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+      <div
+        className={`dashboard-main ${isSidebarCollapsed ? "collapsed" : ""}`}
+      >
         <Header
           title="Dashboard"
           onMenuToggle={handleMobileMenuToggle}
@@ -125,9 +140,7 @@ ${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
 
         <div className="dashboard-content">
           <div className="welcome-section">
-            <h1 className="welcome-title">
-              Welcome back, {user?.firstname}!
-            </h1>
+            <h1 className="welcome-title">Welcome back, {user?.firstname}!</h1>
             <p className="welcome-subtitle">
               Track your reports and monitor their progress in real-time.
             </p>
@@ -190,7 +203,8 @@ ${report.videos.length > 0 ? `Videos: ${report.videos.length} attached` : ''}
                 <div className="empty-icon">📝</div>
                 <h3 className="empty-title">No reports yet</h3>
                 <p className="empty-description">
-                  Start by creating your first report to fight corruption or request government intervention.
+                  Start by creating your first report to fight corruption or
+                  request government intervention.
                 </p>
                 <Link to="/create-report" className="btn btn-primary">
                   Create First Report
