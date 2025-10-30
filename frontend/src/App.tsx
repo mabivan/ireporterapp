@@ -5,9 +5,8 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { ReportProvider } from "./context/ReportContext";
-import { useAuth } from "./context/AuthContext";
 
 // Pages
 import Login from "./pages/Auth/Login";
@@ -20,7 +19,7 @@ import EditReport from "./pages/EditReport/EditReport";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
-const App: React.FC = () => {
+const AppRoutes: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
 
   return (
@@ -66,7 +65,7 @@ const App: React.FC = () => {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute adminOnly>
+          <ProtectedRoute adminOnly={true}>
             <AdminDashboard />
           </ProtectedRoute>
         }
@@ -95,7 +94,23 @@ const App: React.FC = () => {
           </ProtectedRoute>
         }
       />
+      {/* Catch all unmatched routes */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <Router>
+      <AuthProvider>
+        <ReportProvider>
+          <div className="App">
+            <AppRoutes />
+          </div>
+        </ReportProvider>
+      </AuthProvider>
+    </Router>
   );
 };
 
