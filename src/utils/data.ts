@@ -1,4 +1,4 @@
-import { User, Incident } from './types';
+/*import { User, Incident } from './types';
 
 export const mockUsers: User[] = [
   {
@@ -88,4 +88,4 @@ export const mockReports: Incident[] = [
     videos: [],
     comment: 'Multiple street lights not working in downtown area'
   }
-];
+];*/

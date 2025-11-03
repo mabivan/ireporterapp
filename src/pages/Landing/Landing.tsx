@@ -6,44 +6,42 @@ import HowItWorks from "../../components/HowItWorks/HowItWorks";
 import StatsSection from "../../components/StatsSection/StatsSection";
 import logo from "../../assets/ireportlogo.png";
 import "./Landing.css";
-
-// Import your authentication hook or context
 import { useAuth } from "../../context/AuthContext";
 
 const Landing: React.FC = () => {
   const navigate = useNavigate();
   const [isHeaderScrolled, setIsHeaderScrolled] = useState(false);
+  const { isAuthenticated, user, loading, logout } = useAuth();
 
-  // Get authentication state
-  const { isAuthenticated, user, loading } = useAuth(); // Adjust based on your auth implementation
-
+  // ✅ Clear session if not "remember me"
   useEffect(() => {
-    const handleScroll = () => {
-      setIsHeaderScrolled(window.scrollY > 50);
-    };
+    if (isAuthenticated) {
+      const rememberMe = localStorage.getItem("rememberMe") === "true";
+      if (!rememberMe) {
+        logout(); // clears sessionStorage but keeps localStorage if rememberMe was set
+      }
+    }
+  }, [isAuthenticated]);
 
+  // ✅ Header scroll effect
+  useEffect(() => {
+    const handleScroll = () => setIsHeaderScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // ✅ Navigation helper
   const handleNavigation = (path: string) => {
-    // If user is authenticated and trying to access auth pages, redirect to dashboard
     if (isAuthenticated && (path === "/login" || path === "/signup")) {
-      navigate("/dashboard");
+      navigate(user?.isAdmin ? "/admin" : "/dashboard");
       return;
     }
     navigate(path);
   };
 
-  const handleGetStarted = () => {
-    handleNavigation("/signup");
-  };
+  const handleGetStarted = () => handleNavigation("/signup");
+  const handleReportNow = () => handleNavigation("/login");
 
-  const handleReportNow = () => {
-    handleNavigation("/login");
-  };
-
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="loading-container">
@@ -77,16 +75,7 @@ const Landing: React.FC = () => {
 
             <div className="header-actions">
               <div className="auth-buttons">
-                {isAuthenticated ? (
-                  // Show dashboard button if user is logged in
-                  <button
-                    className="landing-btn landing-btn-primary"
-                    onClick={() => navigate("/dashboard")}
-                  >
-                    Go to Dashboard
-                  </button>
-                ) : (
-                  // Show login/signup buttons if user is not logged in
+                {!isAuthenticated ? (
                   <>
                     <button
                       className="landing-btn landing-btn-outline"
@@ -101,6 +90,15 @@ const Landing: React.FC = () => {
                       Sign Up
                     </button>
                   </>
+                ) : (
+                  <button
+                    className="landing-btn landing-btn-primary"
+                    onClick={() =>
+                      navigate(user?.isAdmin ? "/admin" : "/dashboard")
+                    }
+                  >
+                    Go to Dashboard
+                  </button>
                 )}
               </div>
             </div>
@@ -109,7 +107,6 @@ const Landing: React.FC = () => {
       </header>
 
       <main>
-        {/* Hero Section */}
         <HeroSection
           onGetStarted={
             isAuthenticated ? () => navigate("/dashboard") : handleGetStarted
@@ -119,16 +116,10 @@ const Landing: React.FC = () => {
           }
         />
 
-        {/* Features Section */}
         <FeaturesSection />
-
-        {/* How It Works Section */}
         <HowItWorks />
-
-        {/* Stats Section */}
         <StatsSection />
 
-        {/* CTA Section */}
         <section className="cta-section">
           <div className="container">
             <div className="cta-content">
@@ -164,7 +155,6 @@ const Landing: React.FC = () => {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="landing-footer">
         <div className="container">
           <div className="footer-grid">
